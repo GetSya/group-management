@@ -1,0 +1,38 @@
+{
+  "name": "telegram-group-management-bot",
+  "version": "1.0.0",
+  "description": "Production-ready Telegram Group Management and Moderation Bot built with Node.js, Telegraf, and local atomic db.json",
+  "main": "src/app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "test": "node --test tests/mediaDetector.test.js tests/linkDetector.test.js tests/alphabetDetector.test.js tests/callbackParser.test.js tests/database.test.js tests/customCommands.test.js",
+    "format": "prettier --write \"src/**/*.js\" \"locales/*.json\""
+  },
+  "keywords": [
+    "telegram-bot",
+    "group-management",
+    "moderation",
+    "telegraf",
+    "nodejs",
+    "json-database"
+  ],
+  "author": "Antigravity Senior Node.js Engineer",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.3.0",
+    "telegraf": "^4.16.3",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

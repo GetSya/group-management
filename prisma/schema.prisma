@@ -1,0 +1,350 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ModerationAction {
+  NONE
+  DELETE
+  WARN
+  MUTE
+  KICK
+  BAN
+  RESTRICT_ALL
+  RESTRICT_MEDIA
+}
+
+enum BlockType {
+  USER
+  USERNAME
+  WORD
+  PHRASE
+  DOMAIN
+}
+
+enum CaptchaType {
+  BUTTON
+  MATH
+}
+
+model Group {
+  id                      String                   @id @default(uuid())
+  chatId                  String                   @unique
+  title                   String
+  type                    String
+  language                String                   @default("en")
+  isActive                Boolean                  @default(true)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+
+  settings                GroupSettings?
+  mediaSettings           MediaSettings?
+  regulationSettings      RegulationSettings?
+  antiSpamSettings        AntiSpamSettings?
+  antiFloodSettings       AntiFloodSettings?
+  welcomeSettings         WelcomeSettings?
+  goodbyeSettings         GoodbyeSettings?
+  alphabetSettings        AlphabetSettings?
+  captchaSettings         CaptchaSettings?
+  checksSettings          ChecksSettings?
+  adminMentionSettings    AdminMentionSettings?
+  nsfwSettings            NSFWSettings?
+  warnSettings            WarnSettings?
+  nightModeSettings       NightModeSettings?
+  tagSettings             TagSettings?
+  linkSettings            LinkSettings?
+  guardianSettings        GuardianSettings?
+  approvalSettings        ApprovalSettings?
+  deletingMessagesSettings DeletingMessagesSettings?
+
+  blocks                  Block[]
+  warnings                Warning[]
+  warningHistories        WarningHistory[]
+  adminLogs               AdminLog[]
+
+  @@index([chatId])
+}
+
+model GroupSettings {
+  id        String   @id @default(uuid())
+  groupId   String   @unique
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+}
+
+model MediaSettings {
+  id          String   @id @default(uuid())
+  groupId     String   @unique
+  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  photo       Boolean  @default(true)
+  video       Boolean  @default(true)
+  audio       Boolean  @default(true)
+  voice       Boolean  @default(true)
+  document    Boolean  @default(true)
+  sticker     Boolean  @default(true)
+  animation   Boolean  @default(true)
+  contact     Boolean  @default(false)
+  location    Boolean  @default(false)
+  venue       Boolean  @default(false)
+  poll        Boolean  @default(true)
+  dice        Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+}
+
+model RegulationSettings {
+  id        String   @id @default(uuid())
+  groupId   String   @unique
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled   Boolean  @default(false)
+  rulesText String   @default("1. No spamming or flooding\n2. Be respectful to members\n3. No offensive or adult content\n4. Follow admin instructions")
+  updatedAt DateTime @updatedAt
+}
+
+model AntiSpamSettings {
+  id                String           @id @default(uuid())
+  groupId           String           @unique
+  group             Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled           Boolean          @default(true)
+  threshold         Int              @default(5)
+  timeWindow        Int              @default(10)
+  action            ModerationAction @default(DELETE)
+  checkDuplicate    Boolean          @default(true)
+  checkUrlSpam      Boolean          @default(true)
+  checkMentionSpam  Boolean          @default(true)
+  updatedAt         DateTime         @updatedAt
+}
+
+model AntiFloodSettings {
+  id           String           @id @default(uuid())
+  groupId      String           @unique
+  group        Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled      Boolean          @default(true)
+  messageCount Int              @default(5)
+  timeWindow   Int              @default(10)
+  action       ModerationAction @default(MUTE)
+  updatedAt    DateTime         @updatedAt
+}
+
+model WelcomeSettings {
+  id                 String   @id @default(uuid())
+  groupId            String   @unique
+  group              Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled            Boolean  @default(true)
+  message            String   @default("👋 Welcome {mention} to {group}!\nPlease read the group rules.")
+  deleteAfterSeconds Int      @default(0)
+  cleanPrevious      Boolean  @default(false)
+  updatedAt          DateTime @updatedAt
+}
+
+model GoodbyeSettings {
+  id                 String   @id @default(uuid())
+  groupId            String   @unique
+  group              Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled            Boolean  @default(false)
+  message            String   @default("👋 Goodbye {user}!")
+  deleteAfterSeconds Int      @default(60)
+  updatedAt          DateTime @updatedAt
+}
+
+model AlphabetSettings {
+  id             String           @id @default(uuid())
+  groupId        String           @unique
+  group          Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled        Boolean          @default(false)
+  allowedScripts String           @default("[\"LATIN\"]")
+  action         ModerationAction @default(DELETE)
+  updatedAt      DateTime         @updatedAt
+}
+
+model CaptchaSettings {
+  id             String           @id @default(uuid())
+  groupId        String           @unique
+  group          Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled        Boolean          @default(false)
+  type           CaptchaType      @default(BUTTON)
+  timeoutSeconds Int              @default(120)
+  action         ModerationAction @default(KICK)
+  unmuteOnPass   Boolean          @default(true)
+  updatedAt      DateTime         @updatedAt
+}
+
+model ChecksSettings {
+  id              String           @id @default(uuid())
+  groupId         String           @unique
+  group           Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled         Boolean          @default(false)
+  blockBots       Boolean          @default(true)
+  requireUsername Boolean          @default(false)
+  action          ModerationAction @default(KICK)
+  updatedAt       DateTime         @updatedAt
+}
+
+model AdminMentionSettings {
+  id                 String   @id @default(uuid())
+  groupId            String   @unique
+  group              Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled            Boolean  @default(true)
+  cooldownSeconds    Int      @default(60)
+  alertAdminsInGroup Boolean  @default(true)
+  forwardToAdmins    Boolean  @default(false)
+  updatedAt          DateTime @updatedAt
+}
+
+model Block {
+  id        String           @id @default(uuid())
+  groupId   String
+  group     Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  type      BlockType
+  value     String
+  action    ModerationAction @default(DELETE)
+  createdAt DateTime         @default(now())
+
+  @@index([groupId, type])
+}
+
+model NSFWSettings {
+  id        String           @id @default(uuid())
+  groupId   String           @unique
+  group     Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled   Boolean          @default(false)
+  provider  String           @default("disabled")
+  threshold Float            @default(0.85)
+  action    ModerationAction @default(DELETE)
+  updatedAt DateTime         @updatedAt
+}
+
+model Warning {
+  id        String   @id @default(uuid())
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([groupId, userId])
+}
+
+model WarningHistory {
+  id          String           @id @default(uuid())
+  groupId     String
+  group       Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId      String
+  moderatorId String
+  reason      String
+  warnNumber  Int
+  actionTaken ModerationAction
+  createdAt   DateTime         @default(now())
+
+  @@index([groupId, userId])
+}
+
+model WarnSettings {
+  id                  String           @id @default(uuid())
+  groupId             String           @unique
+  group               Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled             Boolean          @default(true)
+  maxWarns            Int              @default(3)
+  action              ModerationAction @default(MUTE)
+  muteDurationSeconds Int              @default(86400)
+  warnDecayHours      Int              @default(24)
+  updatedAt           DateTime         @updatedAt
+}
+
+model NightModeSettings {
+  id          String           @id @default(uuid())
+  groupId     String           @unique
+  group       Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled     Boolean          @default(false)
+  startTime   String           @default("23:00")
+  endTime     String           @default("06:00")
+  timezone    String           @default("Asia/Jakarta")
+  action      ModerationAction @default(DELETE)
+  adminBypass Boolean          @default(true)
+  updatedAt   DateTime         @updatedAt
+}
+
+model TagSettings {
+  id              String   @id @default(uuid())
+  groupId         String   @unique
+  group           Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled         Boolean  @default(true)
+  allowTagAdmins  Boolean  @default(true)
+  cooldownSeconds Int      @default(120)
+  updatedAt       DateTime @updatedAt
+}
+
+model LinkSettings {
+  id                 String           @id @default(uuid())
+  groupId            String           @unique
+  group              Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled            Boolean          @default(true)
+  allowTelegramLinks Boolean          @default(false)
+  whitelistedDomains String           @default("[\"youtube.com\",\"youtu.be\",\"github.com\",\"google.com\"]")
+  action             ModerationAction @default(DELETE)
+  updatedAt          DateTime         @updatedAt
+}
+
+model GuardianSettings {
+  id                 String           @id @default(uuid())
+  groupId            String           @unique
+  group              Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled            Boolean          @default(true)
+  antiRaidThreshold  Int              @default(10)
+  antiRaidWindow     Int              @default(10)
+  lockdownDuration   Int              @default(600)
+  autoLockdown       Boolean          @default(true)
+  action             ModerationAction @default(KICK)
+  updatedAt          DateTime         @updatedAt
+}
+
+model ApprovalSettings {
+  id           String   @id @default(uuid())
+  groupId      String   @unique
+  group        Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled      Boolean  @default(false)
+  autoApprove  Boolean  @default(false)
+  notifyAdmins Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+}
+
+model DeletingMessagesSettings {
+  id                  String   @id @default(uuid())
+  groupId             String   @unique
+  group               Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  enabled             Boolean  @default(true)
+  deleteJoinMessages  Boolean  @default(true)
+  deleteLeaveMessages Boolean  @default(true)
+  deleteCommands      Boolean  @default(true)
+  deleteBotMessages   Boolean  @default(false)
+  deleteAfterSeconds  Int      @default(30)
+  updatedAt           DateTime @updatedAt
+}
+
+model User {
+  id         String   @id @default(uuid())
+  telegramId String   @unique
+  username   String?
+  firstName  String
+  lastName   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([telegramId])
+}
+
+model AdminLog {
+  id         String   @id @default(uuid())
+  groupId    String
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  adminId    String
+  actionType String
+  targetId   String?
+  details    String?
+  createdAt  DateTime @default(now())
+
+  @@index([groupId, createdAt])
+}

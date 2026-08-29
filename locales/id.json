@@ -1,0 +1,175 @@
+{
+  "common": {
+    "enabled": "Aktif",
+    "disabled": "Nonaktif",
+    "status": "Status",
+    "back": "⬅️ Kembali",
+    "close": "✅ Tutup",
+    "confirm": "✅ Konfirmasi",
+    "cancel": "❌ Batal",
+    "save": "💾 Simpan",
+    "success": "Berhasil",
+    "error": "Gagal",
+    "invalid_action": "❌ Tindakan atau parameter tidak valid.",
+    "only_admin": "❌ Hanya administrator grup yang dapat mengubah pengaturan ini.",
+    "missing_permission": "⚠️ <b>Izin Bot Kurang</b>\n\nFitur ini membutuhkan hak admin:\n• Hapus Pesan (Delete Messages)\n• Batasi Pengguna (Restrict Members)",
+    "not_group": "⚠️ Perintah ini hanya dapat digunakan di dalam grup atau supergroup.",
+    "bot_not_admin": "⚠️ Harap jadikan bot sebagai Admin dengan hak penuh untuk mengaktifkan moderasi."
+  },
+  "settings": {
+    "title": "🛡 <b>Bantuan Grup\nPENGATURAN</b>\n\nGrup: <b>{group_name}</b>\n\nPilih salah satu pengaturan yang ingin Anda ubah.",
+    "closed": "Menu pengaturan ditutup.",
+    "regulation": "📜 Aturan",
+    "antispam": "🛡 Anti-Spam",
+    "welcome": "👋 Sambutan",
+    "antiflood": "🌊 Anti-Flood",
+    "goodbye": "👋 Perpisahan",
+    "alphabets": "🔤 Alfabet",
+    "captcha": "🧠 Captcha",
+    "checks": "🛠 Pengecekan",
+    "admin": "🆘 @Admin",
+    "blocks": "🔐 Blokir",
+    "media": "📦 Media",
+    "porn": "🔞 Pornografi",
+    "warns": "⚠️ Peringatan",
+    "night": "🌙 Mode Malam",
+    "tag": "🔔 Tag",
+    "link": "🔗 Tautan",
+    "antiDelete": "🛡 Anti Delete",
+    "guardian": "👮 Guardian Bot",
+    "approval": "📚 Mode Persetujuan",
+    "deleting": "🗑 Penghapusan Pesan",
+    "lang": "🇮🇩 Bahasa",
+    "other": "▶️ Lainnya"
+  },
+  "media": {
+    "title": "📦 <b>PENGATURAN MEDIA</b>\n\nAtur jenis media yang diizinkan dan dibatasi untuk anggota biasa.",
+    "allow_all": "✅ Izinkan Semua",
+    "deny_all": "❌ Larang Semua",
+    "photo": "🖼 Foto",
+    "video": "🎥 Video",
+    "audio": "🎵 Audio",
+    "voice": "🎙 Suara",
+    "document": "📄 Dokumen",
+    "sticker": "🎨 Stiker",
+    "animation": "🎞 Animasi",
+    "contact": "👤 Kontak",
+    "location": "📍 Lokasi",
+    "venue": "🏢 Tempat",
+    "poll": "📊 Polling",
+    "dice": "🎲 Dadu"
+  },
+  "regulation": {
+    "title": "📜 <b>PERATURAN / RULES</b>\n\nStatus: {status}\n\n<b>Peraturan Saat Ini:</b>\n{rules}",
+    "edit_prompt": "✏️ Silakan kirim teks peraturan baru sekarang (kirim /cancel untuk batal):",
+    "edit_btn": "✏️ Edit Peraturan",
+    "toggle_btn": "🔄 Ganti Status",
+    "updated": "✅ Peraturan berhasil diperbarui."
+  },
+  "antispam": {
+    "title": "🛡 <b>PENGATURAN ANTI-SPAM</b>\n\nStatus: {status}\nAmbang Batas: {threshold} duplikat\nJeda Waktu: {window}d\nTindakan: {action}",
+    "action_btn": "⚡ Tindakan: {action}",
+    "toggle_btn": "🔄 Ganti Status"
+  },
+  "antiflood": {
+    "title": "🌊 <b>PROTEKSI ANTI-FLOOD</b>\n\nStatus: {status}\nBatas: {threshold} pesan / {window} detik\nTindakan: {action}",
+    "action_btn": "⚡ Tindakan: {action}",
+    "toggle_btn": "🔄 Ganti Status"
+  },
+  "welcome": {
+    "title": "👋 <b>PESAN SAMBUTAN</b>\n\nStatus: {status}\nHapus Setelah: {deleteAfter}d\n\n<b>Format Pesan:</b>\n{message}",
+    "edit_prompt": "✏️ Kirim pesan sambutan baru.\n\nVariabel yang tersedia:\n{mention}, {user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_btn": "✏️ Edit Pesan",
+    "toggle_btn": "🔄 Ganti Status"
+  },
+  "goodbye": {
+    "title": "👋 <b>PESAN PERPISAHAN</b>\n\nStatus: {status}\nHapus Setelah: {deleteAfter}d\n\n<b>Format Pesan:</b>\n{message}",
+    "edit_prompt": "✏️ Kirim pesan perpisahan baru.\n\nVariabel yang tersedia:\n{user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_btn": "✏️ Edit Pesan",
+    "toggle_btn": "🔄 Ganti Status"
+  },
+  "alphabets": {
+    "title": "🔤 <b>FILTER ALFABET / AKSARA</b>\n\nStatus: {status}\nAksara Diizinkan: {scripts}\nTindakan: {action}",
+    "toggle_btn": "🔄 Ganti Status",
+    "action_btn": "⚡ Tindakan: {action}"
+  },
+  "captcha": {
+    "title": "🧠 <b>CAPTCHA ANGGOTA BARU</b>\n\nStatus: {status}\nTipe: {type}\nBatas Waktu: {timeout}d\nTindakan: {action}",
+    "verify_btn": "✅ Klik untuk verifikasi",
+    "prompt": "👋 Selamat datang {mention}!\nSilakan klik tombol di bawah dalam waktu {timeout} detik untuk membuktikan Anda manusia.",
+    "passed": "✅ Verifikasi berhasil! Selamat bergabung di grup.",
+    "failed": "❌ Verifikasi gagal atau waktu habis."
+  },
+  "checks": {
+    "title": "🛠 <b>PEMERIKSAAN AKUN</b>\n\nStatus: {status}\nBlokir Bot Pengguna: {blockBots}\nWajib Punya Username: {requireUsername}\nTindakan: {action}",
+    "toggle_bots": "🤖 Blokir Bot",
+    "toggle_username": "🔤 Wajib Username"
+  },
+  "adminMention": {
+    "title": "🆘 <b>PERINGATAN @ADMIN</b>\n\nStatus: {status}\nCooldown: {cooldown}d\nKirim ke Grup: {alertInGroup}",
+    "alert": "🆘 <b>Laporan Admin Terpanggil!</b>\n\nPengirim: {mention}\nGrup: <b>{group}</b>\nPesan: <i>{message}</i>"
+  },
+  "blocks": {
+    "title": "🔐 <b>BLOKIR & DAFTAR HITAM</b>\n\nTotal Item Diblokir: {count}\n\nGunakan perintah berikut:\n• <code>/block @user</code>\n• <code>/blockword kata</code>\n• <code>/blockdomain example.com</code>",
+    "clear_btn": "🗑 Hapus Semua Blokir"
+  },
+  "porn": {
+    "title": "🔞 <b>FILTER PORNOGRAFI / NSFW</b>\n\nStatus: {status}\nMode: {mode}\nTindakan: {action}",
+    "toggle_btn": "🔄 Ganti Status",
+    "action_btn": "⚡ Tindakan: {action}"
+  },
+  "warns": {
+    "title": "⚠️ <b>SISTEM PERINGATAN (WARNS)</b>\n\nStatus: {status}\nMaksimal Warn: {maxWarns}\nTindakan Batas Maksimal: {action}\nDurasi Mute: {muteDuration}d",
+    "warned": "⚠️ {mention} telah diberi peringatan ({count}/{max}).\nAlasan: {reason}",
+    "limit_reached": "🚫 {mention} telah mencapai batas peringatan ({max})! Tindakan: <b>{action}</b>",
+    "reset": "✅ Seluruh peringatan untuk {mention} telah direset."
+  },
+  "night": {
+    "title": "🌙 <b>MODE MALAM</b>\n\nStatus: {status}\nJam Tenang: <b>{start} - {end}</b>\nZona Waktu: <b>{timezone}</b>\nTindakan: {action}\nAdmin Bebas: {adminBypass}",
+    "toggle_btn": "🔄 Ganti Status"
+  },
+  "tag": {
+    "title": "🔔 <b>TAG & MENTION</b>\n\nStatus: {status}\nIzinkan /tagadmins: {allowTagAdmins}\nCooldown: {cooldown}d",
+    "tag_admins": "📢 <b>Panggilan Untuk Administrator!</b>\nOleh: {mention}\nPesan: {message}"
+  },
+  "link": {
+    "title": "🔗 <b>PROTEKSI TAUTAN (LINKS)</b>\n\nStatus: {status}\nIzinkan Link Telegram: {allowTelegramLinks}\nTindakan: {action}\n\n<b>Domain Whitelist:</b>\n{domains}",
+    "toggle_tg": "✈️ Izinkan Link TG",
+    "action_btn": "⚡ Tindakan: {action}"
+  },
+  "guardian": {
+    "title": "👮 <b>GUARDIAN SECURITY BOT</b>\n\nStatus: {status}\nBatas Anti-Raid: {threshold} join / {window}d\nDurasi Lockdown: {duration}d\nTindakan: {action}",
+    "raid_alert": "🚨 <b>SERANGAN RAID TERDETEKSI!</b>\nGuardian Bot telah mengaktifkan lockdown darurat selama {duration} detik."
+  },
+  "approval": {
+    "title": "📚 <b>MODE PERSETUJUAN GABUNG</b>\n\nStatus: {status}\nOtomatis Setujui: {autoApprove}\nNotifikasi Admin: {notifyAdmins}",
+    "new_request": "📥 <b>Permintaan Bergabung Baru</b>\nPengguna: {mention}\nUsername: @{username}\nID: <code>{userId}</code>",
+    "approve_btn": "✅ Terima",
+    "reject_btn": "❌ Tolak"
+  },
+  "deleting": {
+    "title": "🗑 <b>PENGHAPUSAN PESAN OTOMATIS</b>\n\nStatus: {status}\nHapus Pesan Join: {deleteJoin}\nHapus Pesan Keluar: {deleteLeave}\nHapus Command: {deleteCommands}\nHapus Pesan Bot: {deleteBot}\nWaktu: {timer}d",
+    "timer_btn": "⏱ Hapus Setelah: {timer}d"
+  },
+  "antiDelete": {
+    "title": "🛡 <b>PROTEKSI ANTI DELETE</b>\n\nStatus: {status}\nCatat Penghapusan: {logDeletions}\nNotifikasi Admin: {notifyAdmins}\nTindakan: {action}\nHukum Pengguna: {punishUser}\nAmbang Batas: {punishThreshold}\nJeda Waktu: {punishWindow}d\nHapus Pesan Bot: {deleteBotMessages}",
+    "toggle_btn": "🔄 Ganti Status",
+    "log_btn": "📝 Catat Hapus",
+    "notify_btn": "🔔 Notif Admin",
+    "action_btn": "⚡ Tindakan: {action}",
+    "punish_btn": "👮 Hukum User",
+    "threshold_btn": "🔢 Ambang: {threshold}",
+    "window_btn": "⏱ Jeda: {window}d",
+    "botmsg_btn": "🤖 Hapus Msg Bot"
+  },
+  "lang": {
+    "title": "🌐 <b>PILIHAN BAHASA / LANGUAGE</b>\n\nPilih bahasa antarmuka bot untuk grup ini:",
+    "selected": "✅ Bahasa diubah ke: {lang}"
+  },
+  "other": {
+    "title": "▶️ <b>FITUR LAINNYA & STATISTIK</b>\n\n📊 ID Grup: <code>{chatId}</code>\n👥 Anggota: {memberCount}\n⚠️ Peringatan Aktif: {warnCount}\n🔐 Aturan Blokir: {blockCount}\n\nPilih salah satu opsi di bawah:",
+    "stats_btn": "📊 Statistik",
+    "logs_btn": "🔎 Log Admin",
+    "admins_btn": "👥 Admin Grup"
+  }
+}

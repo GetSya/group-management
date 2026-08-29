@@ -1,0 +1,175 @@
+{
+  "common": {
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "status": "Status",
+    "back": "⬅️ Back",
+    "close": "✅ Close",
+    "confirm": "✅ Confirm",
+    "cancel": "❌ Cancel",
+    "save": "💾 Save",
+    "success": "Success",
+    "error": "Error",
+    "invalid_action": "❌ Invalid action or parameters.",
+    "only_admin": "❌ Only group administrators can change these settings.",
+    "missing_permission": "⚠️ <b>Missing Permission</b>\n\nThis feature requires:\n• Delete Messages\n• Restrict Members",
+    "not_group": "⚠️ This command can only be used inside a group or supergroup.",
+    "bot_not_admin": "⚠️ Please promote the bot to Administrator with full privileges to enable moderation."
+  },
+  "settings": {
+    "title": "🛡 <b>Group Help\nSETTINGS</b>\n\nGroup: <b>{group_name}</b>\n\nSelect one of the settings that you want to change.",
+    "closed": "Settings menu closed.",
+    "regulation": "📜 Regulation",
+    "antispam": "🛡 Anti-Spam",
+    "welcome": "👋 Welcome",
+    "antiflood": "🌊 Anti-Flood",
+    "goodbye": "👋 Goodbye",
+    "alphabets": "🔤 Alphabets",
+    "captcha": "🧠 Captcha",
+    "checks": "🛠 Checks",
+    "admin": "🆘 @Admin",
+    "blocks": "🔐 Blocks",
+    "media": "📦 Media",
+    "porn": "🔞 Porn",
+    "warns": "⚠️ Warns",
+    "night": "🌙 Night",
+    "tag": "🔔 Tag",
+    "link": "🔗 Link",
+    "antiDelete": "🛡 Anti Delete",
+    "guardian": "👮 Guardian Bot",
+    "approval": "📚 Approval mode",
+    "deleting": "🗑 Deleting Messages",
+    "lang": "🇬🇧 Lang",
+    "other": "▶️ Other"
+  },
+  "media": {
+    "title": "📦 <b>MEDIA SETTINGS</b>\n\nConfigure allowed and restricted media types for regular members.",
+    "allow_all": "✅ Allow All",
+    "deny_all": "❌ Deny All",
+    "photo": "🖼 Photo",
+    "video": "🎥 Video",
+    "audio": "🎵 Audio",
+    "voice": "🎙 Voice",
+    "document": "📄 Document",
+    "sticker": "🎨 Sticker",
+    "animation": "🎞 Animation",
+    "contact": "👤 Contact",
+    "location": "📍 Location",
+    "venue": "🏢 Venue",
+    "poll": "📊 Poll",
+    "dice": "🎲 Dice"
+  },
+  "regulation": {
+    "title": "📜 <b>REGULATION / RULES</b>\n\nStatus: {status}\n\n<b>Current Rules:</b>\n{rules}",
+    "edit_prompt": "✏️ Please send the new rules text now (send /cancel to abort):",
+    "edit_btn": "✏️ Edit Rules",
+    "toggle_btn": "🔄 Toggle Status",
+    "updated": "✅ Rules updated successfully."
+  },
+  "antispam": {
+    "title": "🛡 <b>ANTI-SPAM SETTINGS</b>\n\nStatus: {status}\nThreshold: {threshold} repeat(s)\nWindow: {window}s\nAction: {action}",
+    "action_btn": "⚡ Action: {action}",
+    "toggle_btn": "🔄 Toggle Status"
+  },
+  "antiflood": {
+    "title": "🌊 <b>ANTI-FLOOD PROTECTION</b>\n\nStatus: {status}\nLimit: {threshold} messages / {window} seconds\nAction: {action}",
+    "action_btn": "⚡ Action: {action}",
+    "toggle_btn": "🔄 Toggle Status"
+  },
+  "welcome": {
+    "title": "👋 <b>WELCOME MESSAGE</b>\n\nStatus: {status}\nDelete After: {deleteAfter}s\n\n<b>Message Template:</b>\n{message}",
+    "edit_prompt": "✏️ Send the new welcome message.\n\nAvailable variables:\n{mention}, {user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_btn": "✏️ Edit Message",
+    "toggle_btn": "🔄 Toggle Status"
+  },
+  "goodbye": {
+    "title": "👋 <b>GOODBYE MESSAGE</b>\n\nStatus: {status}\nDelete After: {deleteAfter}s\n\n<b>Message Template:</b>\n{message}",
+    "edit_prompt": "✏️ Send the new goodbye message.\n\nAvailable variables:\n{user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_btn": "✏️ Edit Message",
+    "toggle_btn": "🔄 Toggle Status"
+  },
+  "alphabets": {
+    "title": "🔤 <b>ALPHABET FILTERING</b>\n\nStatus: {status}\nAllowed Scripts: {scripts}\nAction: {action}",
+    "toggle_btn": "🔄 Toggle Status",
+    "action_btn": "⚡ Action: {action}"
+  },
+  "captcha": {
+    "title": "🧠 <b>JOIN CAPTCHA</b>\n\nStatus: {status}\nType: {type}\nTimeout: {timeout}s\nAction: {action}",
+    "verify_btn": "✅ Click here to verify",
+    "prompt": "👋 Welcome {mention}!\nPlease click the button below within {timeout}s to verify you are human.",
+    "passed": "✅ Verification passed! Welcome to the group.",
+    "failed": "❌ Verification failed or timed out."
+  },
+  "checks": {
+    "title": "🛠 <b>ACCOUNT CHECKS</b>\n\nStatus: {status}\nBlock User Bots: {blockBots}\nRequire Username: {requireUsername}\nAction: {action}",
+    "toggle_bots": "🤖 Block Bots",
+    "toggle_username": "🔤 Require Username"
+  },
+  "adminMention": {
+    "title": "🆘 <b>@ADMIN ALERTS</b>\n\nStatus: {status}\nCooldown: {cooldown}s\nAlert in Group: {alertInGroup}",
+    "alert": "🆘 <b>Admin Alert Triggered!</b>\n\nUser: {mention}\nGroup: <b>{group}</b>\nMessage: <i>{message}</i>"
+  },
+  "blocks": {
+    "title": "🔐 <b>BLOCKS & BLACKLISTS</b>\n\nTotal Blocked Items: {count}\n\nUse commands to manage:\n• <code>/block @user</code>\n• <code>/blockword keyword</code>\n• <code>/blockdomain example.com</code>",
+    "clear_btn": "🗑 Clear All Blocks"
+  },
+  "porn": {
+    "title": "🔞 <b>PORN / NSFW FILTER</b>\n\nStatus: {status}\nMode: {mode}\nAction: {action}",
+    "toggle_btn": "🔄 Toggle Status",
+    "action_btn": "⚡ Action: {action}"
+  },
+  "warns": {
+    "title": "⚠️ <b>WARNINGS SYSTEM</b>\n\nStatus: {status}\nMax Warns: {maxWarns}\nAction on Max: {action}\nMute Duration: {muteDuration}s",
+    "warned": "⚠️ {mention} has been warned ({count}/{max}).\nReason: {reason}",
+    "limit_reached": "🚫 {mention} reached maximum warning threshold ({max})! Action: <b>{action}</b>",
+    "reset": "✅ Warnings reset for {mention}."
+  },
+  "night": {
+    "title": "🌙 <b>NIGHT MODE</b>\n\nStatus: {status}\nQuiet Hours: <b>{start} - {end}</b>\nTimezone: <b>{timezone}</b>\nAction: {action}\nAdmin Bypass: {adminBypass}",
+    "toggle_btn": "🔄 Toggle Status"
+  },
+  "tag": {
+    "title": "🔔 <b>TAG & MENTIONS</b>\n\nStatus: {status}\nAllow /tagadmins: {allowTagAdmins}\nCooldown: {cooldown}s",
+    "tag_admins": "📢 <b>Attention Administrators!</b>\nCalled by: {mention}\nMessage: {message}"
+  },
+  "link": {
+    "title": "🔗 <b>LINK PROTECTION</b>\n\nStatus: {status}\nAllow Telegram Links: {allowTelegramLinks}\nAction: {action}\n\n<b>Whitelisted Domains:</b>\n{domains}",
+    "toggle_tg": "✈️ Allow TG Links",
+    "action_btn": "⚡ Action: {action}"
+  },
+  "guardian": {
+    "title": "👮 <b>GUARDIAN SECURITY BOT</b>\n\nStatus: {status}\nAnti-Raid Threshold: {threshold} joins / {window}s\nLockdown Duration: {duration}s\nAction: {action}",
+    "raid_alert": "🚨 <b>RAID DETECTED!</b>\nGuardian Bot has activated emergency lockdown for {duration} seconds."
+  },
+  "approval": {
+    "title": "📚 <b>JOIN REQUEST APPROVAL MODE</b>\n\nStatus: {status}\nAuto Approve: {autoApprove}\nNotify Admins: {notifyAdmins}",
+    "new_request": "📥 <b>New Join Request</b>\nUser: {mention}\nUsername: @{username}\nID: <code>{userId}</code>",
+    "approve_btn": "✅ Approve",
+    "reject_btn": "❌ Reject"
+  },
+  "deleting": {
+    "title": "🗑 <b>AUTOMATIC MESSAGE DELETION</b>\n\nStatus: {status}\nDelete Join Msg: {deleteJoin}\nDelete Leave Msg: {deleteLeave}\nDelete Commands: {deleteCommands}\nDelete Bot Msg: {deleteBot}\nTimer: {timer}s",
+    "timer_btn": "⏱ Delete After: {timer}s"
+  },
+  "antiDelete": {
+    "title": "🛡 <b>ANTI DELETE PROTECTION</b>\n\nStatus: {status}\nLog Deletions: {logDeletions}\nNotify Admins: {notifyAdmins}\nAction: {action}\nPunish User: {punishUser}\nThreshold: {punishThreshold}\nWindow: {punishWindow}s\nDelete Bot Messages: {deleteBotMessages}",
+    "toggle_btn": "🔄 Toggle Status",
+    "log_btn": "📝 Log Deletions",
+    "notify_btn": "🔔 Notify Admins",
+    "action_btn": "⚡ Action: {action}",
+    "punish_btn": "👮 Punish User",
+    "threshold_btn": "🔢 Threshold: {threshold}",
+    "window_btn": "⏱ Window: {window}s",
+    "botmsg_btn": "🤖 Delete Bot Msgs"
+  },
+  "lang": {
+    "title": "🌐 <b>LANGUAGE / BAHASA</b>\n\nSelect the bot interface language for this group:",
+    "selected": "✅ Language changed to: {lang}"
+  },
+  "other": {
+    "title": "▶️ <b>OTHER FEATURES & STATS</b>\n\n📊 Group ID: <code>{chatId}</code>\n👥 Member Counter: {memberCount}\n⚠️ Active Warnings: {warnCount}\n🔐 Block Rules: {blockCount}\n\nSelect an option below:",
+    "stats_btn": "📊 Statistics",
+    "logs_btn": "🔎 Admin Logs",
+    "admins_btn": "👥 Group Admins"
+  }
+}

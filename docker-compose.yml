@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: telegram_moderation_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://postgres:postgres_password@postgres:5432/bot_management_db?schema=public
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - redis
+      - postgres
+
+  redis:
+    image: redis:7-alpine
+    container_name: bot_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bot_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: bot_management_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  redis_data:
+  postgres_data:

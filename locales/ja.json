@@ -1,0 +1,169 @@
+{
+  "common": {
+    "enabled": "有効",
+    "disabled": "無効",
+    "status": "ステータス",
+    "back": "⬅️ 戻る",
+    "close": "✅ 閉じる",
+    "confirm": "✅ 確認",
+    "cancel": "❌ キャンセル",
+    "save": "💾 保存",
+    "success": "成功",
+    "error": "エラー",
+    "invalid_action": "❌ 無効な操作またはパラメータです。",
+    "only_admin": "❌ この設定を変更できるのはグループ管理者のみです。",
+    "missing_permission": "⚠️ <b>権限が不足しています</b>\n\n必要な権限:\n• メッセージの削除 (Delete Messages)\n• メンバーの制限 (Restrict Members)",
+    "not_group": "⚠️ このコマンドはグループまたはスーパーグループ内でのみ使用できます。",
+    "bot_not_admin": "⚠️ モデレーションを有効にするには、ボットを管理者に昇格させてください。"
+  },
+  "settings": {
+    "title": "🛡 <b>グループ管理\n設定ダッシュボード</b>\n\nグループ: <b>{group_name}</b>\n\n変更したい設定を選択してください。",
+    "closed": "設定メニューを閉じました。",
+    "regulation": "📜 ルール設定",
+    "antispam": "🛡 スパム対策",
+    "welcome": "👋 入室挨拶",
+    "antiflood": "🌊 連投対策",
+    "goodbye": "👋 退室通知",
+    "alphabets": "🔤 文字制限",
+    "captcha": "🧠 認証機能",
+    "checks": "🛠 アカウント確認",
+    "admin": "🆘 @管理者",
+    "blocks": "🔐 禁止リスト",
+    "media": "📦 メディア管理",
+    "porn": "🔞 成人向制限",
+    "warns": "⚠️ 警告機能",
+    "night": "🌙 夜間モード",
+    "tag": "🔔 メンション",
+    "link": "🔗 リンク制限",
+    "antiDelete": "🛡 削除防止",
+    "guardian": "👮 防衛ガード",
+    "approval": "📚 参加承認",
+    "deleting": "🗑 自動削除",
+    "lang": "🇯🇵 言語",
+    "other": "▶️ その他"
+  },
+  "media": {
+    "title": "📦 <b>メディア設定</b>\n\n一般メンバーに対して許可または制限するメディア形式を設定します。",
+    "allow_all": "✅ すべて許可",
+    "deny_all": "❌ すべて禁止",
+    "photo": "🖼 写真",
+    "video": "🎥 動画",
+    "audio": "🎵 音楽",
+    "voice": "🎙 音声メッセージ",
+    "document": "📄 ファイル",
+    "sticker": "🎨 ステッカー",
+    "animation": "🎞 GIFアニメ",
+    "contact": "👤 連絡先",
+    "location": "📍 位置情報",
+    "venue": "🏢 施設情報",
+    "poll": "📊 投票",
+    "dice": "🎲 ダイス"
+  },
+  "regulation": {
+    "title": "📜 <b>グループ規約 / ルール</b>\n\nステータス: {status}\n\n<b>現在のルール:</b>\n{rules}",
+    "edit_prompt": "✏️ 新しいルール内容を送信してください（中断する場合は /cancel）:",
+    "edit_btn": "✏️ ルール編集",
+    "toggle_btn": "🔄 状態切替",
+    "updated": "✅ ルールが正常に更新されました。"
+  },
+  "antispam": {
+    "title": "🛡 <b>スパム対策設定</b>\n\nステータス: {status}\n重複閾値: {threshold} 回\n判定時間: {window} 秒\n処置: {action}",
+    "action_btn": "⚡ 処置: {action}",
+    "toggle_btn": "🔄 状態切替"
+  },
+  "antiflood": {
+    "title": "🌊 <b>連投対策 (アンチフラッド)</b>\n\nステータス: {status}\n上限: {threshold} 件 / {window} 秒\n処置: {action}",
+    "action_btn": "⚡ 処置: {action}",
+    "toggle_btn": "🔄 状態切替"
+  },
+  "welcome": {
+    "title": "👋 <b>ウェルカムメッセージ</b>\n\nステータス: {status}\n自動削除: {deleteAfter} 秒\n\n<b>メッセージ形式:</b>\n{message}",
+    "edit_prompt": "✏️ 新しい歓迎メッセージを送信してください。\n\n利用可能な変数:\n{mention}, {user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_btn": "✏️ 文面編集",
+    "toggle_btn": "🔄 状態切替"
+  },
+  "goodbye": {
+    "title": "👋 <b>退室メッセージ</b>\n\nステータス: {status}\n自動削除: {deleteAfter} 秒\n\n<b>メッセージ形式:</b>\n{message}",
+    "edit_prompt": "✏️ 新しい退室メッセージを送信してください。\n\n利用可能な変数:\n{user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_btn": "✏️ 文面編集",
+    "toggle_btn": "🔄 状態切替"
+  },
+  "alphabets": {
+    "title": "🔤 <b>文字体系フィルタ</b>\n\nステータス: {status}\n許可された文字: {scripts}\n処置: {action}",
+    "toggle_btn": "🔄 状態切替",
+    "action_btn": "⚡ 処置: {action}"
+  },
+  "captcha": {
+    "title": "🧠 <b>新規メンバー認証 (キャプチャ)</b>\n\nステータス: {status}\n方式: {type}\n制限時間: {timeout} 秒\n処置: {action}",
+    "verify_btn": "✅ ここを押して認証を完了",
+    "prompt": "👋 ようこそ {mention} さん！\n人間であることを確認するため、{timeout}秒以内に下のボタンを押してください。",
+    "passed": "✅ 認証に成功しました！グループへようこそ。",
+    "failed": "❌ 認証に失敗したか、制限時間を超過しました。"
+  },
+  "checks": {
+    "title": "🛠 <b>アカウント安全性チェック</b>\n\nステータス: {status}\nボット禁止: {blockBots}\nユーザー名必須: {requireUsername}\n処置: {action}",
+    "toggle_bots": "🤖 ボット遮断",
+    "toggle_username": "🔤 ユーザー名必須"
+  },
+  "adminMention": {
+    "title": "🆘 <b>@管理者 呼び出し通知</b>\n\nステータス: {status}\nクールダウン: {cooldown} 秒\nグループ内通知: {alertInGroup}",
+    "alert": "🆘 <b>管理者が呼び出されました！</b>\n\n発信者: {mention}\nグループ: <b>{group}</b>\nメッセージ: <i>{message}</i>"
+  },
+  "blocks": {
+    "title": "🔐 <b>禁止リスト (ブラックリスト)</b>\n\n登録数: {count} 件\n\nコマンドで管理:\n• <code>/block @user</code>\n• <code>/blockword 禁止ワード</code>\n• <code>/blockdomain example.com</code>",
+    "clear_btn": "🗑 すべて消去"
+  },
+  "porn": {
+    "title": "🔞 <b>アダルト・NSFWフィルタ</b>\n\nステータス: {status}\nモード: {mode}\n処置: {action}",
+    "toggle_btn": "🔄 状態切替",
+    "action_btn": "⚡ 処置: {action}"
+  },
+  "warns": {
+    "title": "⚠️ <b>警告システム (Warns)</b>\n\nステータス: {status}\n上限回数: {maxWarns}\n上限時処置: {action}\nミュート時間: {muteDuration} 秒",
+    "warned": "⚠️ {mention} に警告が付与されました ({count}/{max})。\n理由: {reason}",
+    "limit_reached": "🚫 {mention} が警告上限 ({max}) に達しました！ 処置: <b>{action}</b>",
+    "reset": "✅ {mention} のすべての警告がリセットされました。"
+  },
+  "night": {
+    "title": "🌙 <b>ナイトモード (深夜制限)</b>\n\nステータス: {status}\n静寂時間: <b>{start} - {end}</b>\nタイムゾーン: <b>{timezone}</b>\n処置: {action}\n管理者除外: {adminBypass}",
+    "toggle_btn": "🔄 状態切替"
+  },
+  "tag": {
+    "title": "🔔 <b>管理者一括タグ</b>\n\nステータス: {status}\n/tagadmins許可: {allowTagAdmins}\nクールダウン: {cooldown} 秒",
+    "tag_admins": "📢 <b>管理者への通知！</b>\n呼出者: {mention}\n内容: {message}"
+  },
+  "link": {
+    "title": "🔗 <b>リンク保護</b>\n\nステータス: {status}\nTelegramリンク許可: {allowTelegramLinks}\n処置: {action}\n\n<b>許可ドメイン:</b>\n{domains}",
+    "toggle_tg": "✈️ TGリンク許可",
+    "action_btn": "⚡ 処置: {action}"
+  },
+  "guardian": {
+    "title": "👮 <b>防衛ガーディアンボット</b>\n\nステータス: {status}\n襲撃検知: {threshold} 参加 / {window} 秒\nロックダウン時間: {duration} 秒\n処置: {action}",
+    "raid_alert": "🚨 <b>大量参加攻撃 (RAID) を検知！</b>\nボットは {duration} 秒間の緊急ロックダウンを発動しました。"
+  },
+  "approval": {
+    "title": "📚 <b>参加リクエスト承認モード</b>\n\nステータス: {status}\n自動承認: {autoApprove}\n管理者通知: {notifyAdmins}",
+    "new_request": "📥 <b>新しい参加リクエスト</b>\nユーザー: {mention}\nユーザー名: @{username}\nID: <code>{userId}</code>",
+    "approve_btn": "✅ 承認",
+    "reject_btn": "❌ 拒否"
+  },
+  "deleting": {
+    "title": "🗑 <b>メッセージ自動削除</b>\n\nステータス: {status}\n参加通知削除: {deleteJoin}\n退室通知削除: {deleteLeave}\nコマンド削除: {deleteCommands}\nボット返信削除: {deleteBot}\nタイマー: {timer} 秒",
+    "timer_btn": "⏱ 削除時間: {timer}秒"
+  },
+  "antiDelete": {
+    "title": "🛡 <b>削除防止機能</b>\n\nステータス: {status}\nログ記録: {logDeletions}\n通知: {notifyAdmins}\n処置: {action}",
+    "toggle_btn": "🔄 状態切替",
+    "action_btn": "⚡ 処置: {action}"
+  },
+  "lang": {
+    "title": "🌐 <b>言語選択 / Language</b>\n\nこのグループで使用するボットのインターフェース言語を選択してください:",
+    "selected": "✅ 言語が変更されました: {lang}"
+  },
+  "other": {
+    "title": "▶️ <b>その他の機能と統計</b>\n\n📊 グループID: <code>{chatId}</code>\n👥 メンバー数: {memberCount}\n⚠️ 有効警告数: {warnCount}\n🔐 禁止ルール数: {blockCount}\n\n以下のオプションを選択してください:",
+    "stats_btn": "📊 統計データ",
+    "logs_btn": "🔎 管理ログ",
+    "admins_btn": "👥 管理者一覧"
+  }
+}
