@@ -78,13 +78,13 @@
   },
   "welcome": {
     "title": "👋 <b>PESAN SAMBUTAN</b>\n\nStatus: {status}\nHapus Setelah: {deleteAfter}d\n\n<b>Format Pesan:</b>\n{message}",
-    "edit_prompt": "✏️ Kirim pesan sambutan baru.\n\nVariabel yang tersedia:\n{mention}, {user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_prompt": "✏️ Kirim pesan sambutan baru.\n\nVariabel yang tersedia:\n@mention, @name, @user, @username, @first_name, @last_name, @group, @date",
     "edit_btn": "✏️ Edit Pesan",
     "toggle_btn": "🔄 Ganti Status"
   },
   "goodbye": {
     "title": "👋 <b>PESAN PERPISAHAN</b>\n\nStatus: {status}\nHapus Setelah: {deleteAfter}d\n\n<b>Format Pesan:</b>\n{message}",
-    "edit_prompt": "✏️ Kirim pesan perpisahan baru.\n\nVariabel yang tersedia:\n{user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_prompt": "✏️ Kirim pesan perpisahan baru.\n\nVariabel yang tersedia:\n@mention, @name, @user, @username, @first_name, @last_name, @group, @date",
     "edit_btn": "✏️ Edit Pesan",
     "toggle_btn": "🔄 Ganti Status"
   },

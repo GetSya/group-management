@@ -16,7 +16,7 @@
       "username": "sofunsyabi",
       "firstName": "Rfi",
       "lastName": null,
-      "updatedAt": "2026-08-29T15:21:34.989Z"
+      "updatedAt": "2026-08-29T15:27:55.426Z"
     },
     "8521936089": {
       "id": "8521936089",
@@ -508,6 +508,83 @@
         "createdBy": "8521936089",
         "createdAt": "2026-08-29T15:18:36.111Z",
         "updatedAt": "2026-08-29T15:18:36.111Z"
+      }
+    },
+    "-100999111": {
+      "info": {
+        "id": "cmd_921029b1",
+        "name": "info",
+        "aliases": [],
+        "enabled": true,
+        "permission": "everyone",
+        "parseMode": "HTML",
+        "response": "Info Group A",
+        "buttons": [],
+        "cooldown": 3,
+        "deleteTrigger": false,
+        "deleteResponseAfter": null,
+        "createdBy": "system",
+        "createdAt": "2026-08-30T00:47:56.535Z",
+        "updatedAt": "2026-08-30T00:47:56.535Z"
+      }
+    },
+    "-100999222": {
+      "info": {
+        "id": "cmd_ca59b849",
+        "name": "info",
+        "aliases": [],
+        "enabled": true,
+        "permission": "everyone",
+        "parseMode": "HTML",
+        "response": "Info Group B",
+        "buttons": [],
+        "cooldown": 3,
+        "deleteTrigger": false,
+        "deleteResponseAfter": null,
+        "createdBy": "system",
+        "createdAt": "2026-08-30T00:47:56.535Z",
+        "updatedAt": "2026-08-30T00:47:56.535Z"
+      }
+    },
+    "-100888333": {
+      "socials": {
+        "id": "cmd_31305bc4",
+        "name": "socials",
+        "aliases": [],
+        "enabled": true,
+        "permission": "everyone",
+        "parseMode": "HTML",
+        "response": "Follow our socials!",
+        "buttons": [
+          [
+            {
+              "id": "btn_b9b2ea25",
+              "text": "🌐 Website",
+              "type": "url",
+              "action": {},
+              "url": "https://example.com",
+              "response": null
+            }
+          ],
+          [
+            {
+              "id": "btn_13e20454",
+              "text": "📜 Rules",
+              "type": "command",
+              "action": {
+                "command": "rules"
+              },
+              "url": null,
+              "response": null
+            }
+          ]
+        ],
+        "cooldown": 3,
+        "deleteTrigger": false,
+        "deleteResponseAfter": null,
+        "createdBy": "system",
+        "createdAt": "2026-08-30T00:47:56.537Z",
+        "updatedAt": "2026-08-30T00:47:56.537Z"
       }
     }
   },

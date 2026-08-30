@@ -16,7 +16,7 @@ class WelcomeModule extends BaseModule {
     const text = this.t(lang, 'welcome.title', {
       status: welcome.enabled ? '✅ ' + this.t(lang, 'common.enabled') : '❌ ' + this.t(lang, 'common.disabled'),
       deleteAfter: welcome.deleteAfter || 0,
-      message: welcome.message || '👋 Welcome {mention}!',
+      message: welcome.message || '👋 Welcome @mention!',
     });
 
     const keyboard = Markup.inlineKeyboard([

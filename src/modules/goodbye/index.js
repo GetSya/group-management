@@ -16,7 +16,7 @@ class GoodbyeModule extends BaseModule {
     const text = this.t(lang, 'goodbye.title', {
       status: goodbye.enabled ? '✅ ' + this.t(lang, 'common.enabled') : '❌ ' + this.t(lang, 'common.disabled'),
       deleteAfter: goodbye.deleteAfter || 60,
-      message: goodbye.message || '👋 Goodbye {user}!',
+      message: goodbye.message || '👋 Goodbye @name!',
     });
 
     const keyboard = Markup.inlineKeyboard([

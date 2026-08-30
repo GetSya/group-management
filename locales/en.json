@@ -78,13 +78,13 @@
   },
   "welcome": {
     "title": "👋 <b>WELCOME MESSAGE</b>\n\nStatus: {status}\nDelete After: {deleteAfter}s\n\n<b>Message Template:</b>\n{message}",
-    "edit_prompt": "✏️ Send the new welcome message.\n\nAvailable variables:\n{mention}, {user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_prompt": "✏️ Send the new welcome message.\n\nAvailable variables:\n@mention, @name, @user, @username, @first_name, @last_name, @group, @date",
     "edit_btn": "✏️ Edit Message",
     "toggle_btn": "🔄 Toggle Status"
   },
   "goodbye": {
     "title": "👋 <b>GOODBYE MESSAGE</b>\n\nStatus: {status}\nDelete After: {deleteAfter}s\n\n<b>Message Template:</b>\n{message}",
-    "edit_prompt": "✏️ Send the new goodbye message.\n\nAvailable variables:\n{user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_prompt": "✏️ Send the new goodbye message.\n\nAvailable variables:\n@mention, @name, @user, @username, @first_name, @last_name, @group, @date",
     "edit_btn": "✏️ Edit Message",
     "toggle_btn": "🔄 Toggle Status"
   },

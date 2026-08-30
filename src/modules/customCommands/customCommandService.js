@@ -28,7 +28,9 @@ class CustomCommandService {
     const groupName = parseMode === 'HTML' ? escapeHtml(rawTitle) : rawTitle;
     const mention = getUserMention(from, parseMode === 'HTML');
 
+    const fullName = [rawFirstName, rawLastName].filter(Boolean).join(' ') || firstName || username || 'User';
     const vars = {
+      name: parseMode === 'HTML' ? escapeHtml(fullName) : fullName,
       user: firstName || username || 'User',
       user_id: String(from.id || ''),
       username,
@@ -37,11 +39,12 @@ class CustomCommandService {
       mention,
       group: groupName,
       chat_id: String(chat.id || ''),
-      date: now.toISOString().split('T')[0],
+      date: now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }),
       time: now.toTimeString().split(' ')[0],
     };
 
-    return template.replace(/\{(\w+)\}/g, (match, key) => {
+    return template.replace(/(?:\{(\w+)\}|@(\w+))/g, (match, braceKey, atKey) => {
+      const key = braceKey || atKey;
       return vars[key] !== undefined ? vars[key] : match;
     });
   }

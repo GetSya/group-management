@@ -1,11 +1,26 @@
 /**
  * Helper for safe string interpolation and user mentions
+ * Supports @variable syntax (e.g. @mention, @name, @group, @date)
+ * Also keeps backwards compatibility with {variable} syntax
  */
 function interpolate(template, data = {}) {
   if (!template || typeof template !== 'string') return '';
-  return template.replace(/\{(\w+)\}/g, (match, key) => {
+  return template.replace(/(?:\{(\w+)\}|@(\w+))/g, (match, braceKey, atKey) => {
+    const key = braceKey || atKey;
     return data[key] !== undefined ? String(data[key]) : match;
   });
+}
+
+function getFormattedDate(date = new Date()) {
+  try {
+    return date.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  } catch {
+    return date.toISOString().split('T')[0];
+  }
 }
 
 function getUserMention(user, asHtml = true) {
@@ -31,4 +46,5 @@ module.exports = {
   interpolate,
   getUserMention,
   escapeHtml,
+  getFormattedDate,
 };

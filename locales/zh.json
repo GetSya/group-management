@@ -78,13 +78,13 @@
   },
   "welcome": {
     "title": "👋 <b>入群欢迎消息</b>\n\n状态: {status}\n自动删除: {deleteAfter} 秒\n\n<b>消息模板：</b>\n{message}",
-    "edit_prompt": "✏️ 请发送新的入群欢迎语。\n\n可用变量：\n{mention}, {user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_prompt": "✏️ 请发送新的入群欢迎语。\n\n可用变量：\n@mention, @name, @user, @username, @first_name, @last_name, @group, @date",
     "edit_btn": "✏️ 编辑模板",
     "toggle_btn": "🔄 开关切换"
   },
   "goodbye": {
     "title": "👋 <b>退群提醒消息</b>\n\n状态: {status}\n自动删除: {deleteAfter} 秒\n\n<b>消息模板：</b>\n{message}",
-    "edit_prompt": "✏️ 请发送新的退群提醒语。\n\n可用变量：\n{user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_prompt": "✏️ 请发送新的退群提醒语。\n\n可用变量：\n@mention, @name, @user, @username, @first_name, @last_name, @group, @date",
     "edit_btn": "✏️ 编辑模板",
     "toggle_btn": "🔄 开关切换"
   },

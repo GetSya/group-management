@@ -78,13 +78,13 @@
   },
   "welcome": {
     "title": "👋 <b>ウェルカムメッセージ</b>\n\nステータス: {status}\n自動削除: {deleteAfter} 秒\n\n<b>メッセージ形式:</b>\n{message}",
-    "edit_prompt": "✏️ 新しい歓迎メッセージを送信してください。\n\n利用可能な変数:\n{mention}, {user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_prompt": "✏️ 新しい歓迎メッセージを送信してください。\n\n利用可能な変数:\n@mention, @name, @user, @username, @first_name, @last_name, @group, @date",
     "edit_btn": "✏️ 文面編集",
     "toggle_btn": "🔄 状態切替"
   },
   "goodbye": {
     "title": "👋 <b>退室メッセージ</b>\n\nステータス: {status}\n自動削除: {deleteAfter} 秒\n\n<b>メッセージ形式:</b>\n{message}",
-    "edit_prompt": "✏️ 新しい退室メッセージを送信してください。\n\n利用可能な変数:\n{user}, {username}, {first_name}, {last_name}, {group}",
+    "edit_prompt": "✏️ 新しい退室メッセージを送信してください。\n\n利用可能な変数:\n@mention, @name, @user, @username, @first_name, @last_name, @group, @date",
     "edit_btn": "✏️ 文面編集",
     "toggle_btn": "🔄 状態切替"
   },

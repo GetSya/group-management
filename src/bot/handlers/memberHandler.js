@@ -3,7 +3,7 @@ const db = require('../../database/database');
 const i18n = require('../../services/i18nService');
 const actionService = require('../../services/actionService');
 const moderationService = require('../../services/moderationService');
-const { getUserMention, interpolate } = require('../../utils/messageUtils');
+const { getUserMention, interpolate, getFormattedDate } = require('../../utils/messageUtils');
 const logger = require('../../config/logger');
 
 async function handleNewChatMembers(ctx) {
@@ -109,15 +109,18 @@ async function handleNewChatMembers(ctx) {
     const welcome = groupSettings.welcome || {};
     if (welcome.enabled) {
       const mention = getUserMention(member, true);
-      const welcomeTemplate = welcome.message || '👋 Welcome {mention} to {group}!';
+      const welcomeTemplate = welcome.message || '👋 Welcome @mention to @group!';
 
+      const fullName = [member.first_name, member.last_name].filter(Boolean).join(' ') || 'Member';
       const welcomeText = interpolate(welcomeTemplate, {
         mention,
+        name: fullName,
         user: member.first_name || 'Member',
         username: member.username ? `@${member.username}` : (member.first_name || 'Member'),
         first_name: member.first_name || '',
         last_name: member.last_name || '',
         group: ctx.chat.title || 'Group',
+        date: getFormattedDate(),
       });
 
       try {
@@ -152,15 +155,18 @@ async function handleLeftChatMember(ctx) {
   const goodbye = groupSettings.goodbye || {};
   if (goodbye.enabled) {
     const mention = getUserMention(leftMember, true);
-    const goodbyeTemplate = goodbye.message || '👋 Goodbye {user}!';
+    const goodbyeTemplate = goodbye.message || '👋 Goodbye @name!';
 
+    const fullName = [leftMember.first_name, leftMember.last_name].filter(Boolean).join(' ') || 'Member';
     const goodbyeText = interpolate(goodbyeTemplate, {
       mention,
+      name: fullName,
       user: leftMember.first_name || 'Member',
       username: leftMember.username ? `@${leftMember.username}` : (leftMember.first_name || 'Member'),
       first_name: leftMember.first_name || '',
       last_name: leftMember.last_name || '',
       group: ctx.chat.title || 'Group',
+      date: getFormattedDate(),
     });
 
     try {
