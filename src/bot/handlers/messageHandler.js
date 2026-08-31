@@ -178,6 +178,22 @@ async function messageHandler(ctx) {
           { parse_mode: 'HTML' }
         );
       }
+
+      if (session.action === 'edit_response') {
+        const validation = validateResponse(text);
+        if (!validation.valid) {
+          return ctx.reply(`❌ ${validation.error}`);
+        }
+
+        const cmdName = session.commandName;
+        customCommandRepo.update(chatId, cmdName, { response: validation.cleanResponse });
+        sessionService.clearSession(chatId, userId);
+
+        return ctx.reply(
+          `✅ <b>Response updated for /${cmdName}!</b>\n\nTest it by sending: <code>/${cmdName}</code>`,
+          { parse_mode: 'HTML' }
+        );
+      }
     }
   }
 

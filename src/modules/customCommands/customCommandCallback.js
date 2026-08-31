@@ -104,10 +104,26 @@ async function handleCustomCommandCallback(ctx, action, params) {
     const rendered = customCommandService.interpolateVariables(cmd.response, ctx, cmd.parseMode || 'HTML');
     const keyboard = buildCustomKeyboard(cmd.buttons);
 
+    const maxLength = 4000;
+
+    if (rendered.length > maxLength) {
+      return ctx.answerCbQuery(`❌ Preview terlalu besar (${rendered.length} karakter). Tidak dapat ditampilkan.`, { show_alert: true });
+    }
+
     return ctx.reply(`👁 <b>[PREVIEW] /${cmd.name}</b>\n\n${rendered}`, {
       parse_mode: cmd.parseMode || 'HTML',
       ...(keyboard ? keyboard : {}),
     });
+  }
+
+  if (action === 'edit_resp') {
+    const cmdName = params[0];
+    const cmd = customCommandRepo.findByName(chatId, cmdName);
+    if (!cmd) return ctx.answerCbQuery('Command not found.');
+
+    sessionService.setSession(chatId, userId, { module: 'customCommands', action: 'edit_response', commandName: cmdName }, 300);
+    await ctx.answerCbQuery();
+    return ctx.reply(`✏️ <b>Edit Response for /${cmd.name}</b>\n\nCurrent response:\n<code>${cmd.response.slice(0, 500)}${cmd.response.length > 500 ? '...' : ''}</code>\n\n<i>Send the new response text. Available variables: {mention}, {user}, {username}, {group}, {user_id}, {date}, {time}</i>\n\nSend /cancel to abort.`, { parse_mode: 'HTML' });
   }
 
   if (action === 'btn_add') {

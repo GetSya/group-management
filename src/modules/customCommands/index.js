@@ -90,8 +90,11 @@ class CustomCommandsModule extends BaseModule {
         Markup.button.callback(`👥 Perm: ${cmd.permission.toUpperCase()}`, `customcmd:perm:${cmd.name}`),
       ],
       [
-        Markup.button.callback('➕ Add Button', `customcmd:btn_add:${cmd.name}`),
+        Markup.button.callback('✏️ Edit Response', `customcmd:edit_resp:${cmd.name}`),
         Markup.button.callback('👁 Preview', `customcmd:preview:${cmd.name}`),
+      ],
+      [
+        Markup.button.callback('➕ Add Button', `customcmd:btn_add:${cmd.name}`),
       ],
       ...buttonListRows,
       [
