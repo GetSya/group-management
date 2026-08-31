@@ -34,7 +34,11 @@ async function handleCustomCommandCallback(ctx, action, params) {
     if (button.type === 'response' && button.response) {
       await ctx.answerCbQuery();
       const rendered = customCommandService.interpolateVariables(button.response, ctx, 'HTML');
-      return ctx.reply(rendered, { parse_mode: 'HTML' });
+      const chunks = customCommandService.splitTextIntoChunks(rendered, 4000);
+      for (const chunk of chunks) {
+        await ctx.reply(chunk, { parse_mode: 'HTML' });
+      }
+      return;
     }
 
     return ctx.answerCbQuery();

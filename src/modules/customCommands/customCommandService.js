@@ -110,18 +110,25 @@ class CustomCommandService {
     // 3. Render message & keyboard
     const renderedText = this.interpolateVariables(cmd.response, ctx, cmd.parseMode || 'HTML');
     const keyboard = buildCustomKeyboard(cmd.buttons);
-    const extra = {
-      parse_mode: cmd.parseMode || 'HTML',
-      ...(keyboard ? keyboard : {}),
-    };
+    const parseMode = cmd.parseMode || 'HTML';
 
-    let sentMsg = null;
     if (isFromButton && ctx.callbackQuery) {
       await ctx.answerCbQuery();
-      // If triggered from button, reply new message to avoid overwriting previous menu unless desired
-      sentMsg = await ctx.reply(renderedText, extra);
-    } else {
-      sentMsg = await ctx.reply(renderedText, extra);
+    }
+
+    // Split long messages into chunks (Telegram limit: 4096 chars)
+    const MAX_LENGTH = 4000;
+    const chunks = this.splitTextIntoChunks(renderedText, MAX_LENGTH);
+
+    let sentMsg = null;
+    for (let i = 0; i < chunks.length; i++) {
+      const isLast = i === chunks.length - 1;
+      const extra = {
+        parse_mode: parseMode,
+        // Attach keyboard only to the last chunk
+        ...(isLast && keyboard ? keyboard : {}),
+      };
+      sentMsg = await ctx.reply(chunks[i], extra);
     }
 
     // 4. Record Analytics
@@ -140,6 +147,38 @@ class CustomCommandService {
     }
 
     return true;
+  }
+
+  /**
+   * Splits a long text into chunks not exceeding maxLength characters.
+   * Tries to split on newlines to avoid cutting mid-sentence.
+   */
+  splitTextIntoChunks(text, maxLength = 4000) {
+    if (!text || text.length <= maxLength) return [text];
+
+    const chunks = [];
+    let remaining = text;
+
+    while (remaining.length > maxLength) {
+      // Try to find the last newline within the limit
+      let splitIndex = remaining.lastIndexOf('\n', maxLength);
+      if (splitIndex <= 0) {
+        // No newline found, try splitting at a space
+        splitIndex = remaining.lastIndexOf(' ', maxLength);
+      }
+      if (splitIndex <= 0) {
+        // No space found either, hard split at maxLength
+        splitIndex = maxLength;
+      }
+      chunks.push(remaining.slice(0, splitIndex).trimEnd());
+      remaining = remaining.slice(splitIndex).trimStart();
+    }
+
+    if (remaining.length > 0) {
+      chunks.push(remaining);
+    }
+
+    return chunks;
   }
 
   findButtonById(chatId, buttonId) {
