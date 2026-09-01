@@ -80,7 +80,11 @@ class CustomCommandsModule extends BaseModule {
       });
     }
 
-    const rawPreview = cmd.response.length > 200 ? cmd.response.slice(0, 197) + '...' : cmd.response;
+    // Use code-point aware truncation to avoid splitting surrogate pairs (e.g. fancy unicode, emoji)
+    // which would produce lone surrogates and cause Telegram "can't parse entities" errors.
+    const PREVIEW_LIMIT = 150;
+    const codePoints = Array.from(cmd.response);
+    const rawPreview = codePoints.length > PREVIEW_LIMIT ? codePoints.slice(0, PREVIEW_LIMIT - 3).join('') + '...' : cmd.response;
     // Escape the preview so any HTML in it renders as literal text, not broken tags
     const previewResponse = rawPreview.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 

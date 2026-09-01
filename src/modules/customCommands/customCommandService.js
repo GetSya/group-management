@@ -156,6 +156,18 @@ class CustomCommandService {
   splitTextIntoChunks(text, maxLength = 4000) {
     if (!text || text.length <= maxLength) return [text];
 
+    // Helper to avoid cutting surrogate pairs when hard-splitting
+    const safeSlice = (str, end) => {
+      let s = str.slice(0, end);
+      // If we cut in the middle of a surrogate pair (high surrogate at end), drop it
+      const last = s.charCodeAt(s.length - 1);
+      if (last >= 0xd800 && last <= 0xdbff) {
+        s = s.slice(0, -1);
+        return { text: s, adjustedEnd: end - 1 };
+      }
+      return { text: s, adjustedEnd: end };
+    };
+
     const chunks = [];
     let remaining = text;
 
@@ -167,8 +179,12 @@ class CustomCommandService {
         splitIndex = remaining.lastIndexOf(' ', maxLength);
       }
       if (splitIndex <= 0) {
-        // No space found either, hard split at maxLength
-        splitIndex = maxLength;
+        // No space found either, hard split at maxLength (surrogate-safe)
+        const res = safeSlice(remaining, maxLength);
+        splitIndex = res.adjustedEnd;
+        chunks.push(res.text.trimEnd());
+        remaining = remaining.slice(splitIndex).trimStart();
+        continue;
       }
       chunks.push(remaining.slice(0, splitIndex).trimEnd());
       remaining = remaining.slice(splitIndex).trimStart();

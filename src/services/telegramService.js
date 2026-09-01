@@ -18,7 +18,20 @@ class TelegramService {
       // Telegram limit: 4096 chars for editMessageText
       if (text && text.length > 4096) {
         logger.warn({ chatId, messageId, textLength: text.length }, 'safeEditMessage: text exceeds 4096 chars, truncating');
-        text = text.slice(0, 4090) + '\n...';
+        // Use code-point aware truncation to avoid lone surrogates
+        const cp = Array.from(text);
+        if (cp.length > 4096) {
+          text = cp.slice(0, 4093).join('') + '\n...';
+        } else {
+          // Fallback for edge case where .length >4096 due to surrogate pairs
+          // still ensure last char is not a lone high surrogate
+          let truncated = text.slice(0, 4090);
+          const lastCode = truncated.charCodeAt(truncated.length - 1);
+          if (lastCode >= 0xd800 && lastCode <= 0xdbff) {
+            truncated = truncated.slice(0, -1);
+          }
+          text = truncated + '\n...';
+        }
       }
       return await telegram.editMessageText(chatId, messageId, undefined, text, {
         parse_mode: 'HTML',

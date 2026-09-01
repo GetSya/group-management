@@ -127,7 +127,11 @@ async function handleCustomCommandCallback(ctx, action, params) {
 
     sessionService.setSession(chatId, userId, { module: 'customCommands', action: 'edit_response', commandName: cmdName }, 300);
     await ctx.answerCbQuery();
-    return ctx.reply(`✏️ <b>Edit Response for /${cmd.name}</b>\n\nCurrent response:\n<code>${cmd.response.slice(0, 500)}${cmd.response.length > 500 ? '...' : ''}</code>\n\n<i>Send the new response text. Available variables: {mention}, {user}, {username}, {group}, {user_id}, {date}, {time}</i>\n\nSend /cancel to abort.`, { parse_mode: 'HTML' });
+    // Code-point aware slice to avoid lone surrogates in preview
+    const respPoints = Array.from(cmd.response);
+    const respPreview = respPoints.length > 500 ? respPoints.slice(0, 497).join('') + '...' : cmd.response;
+    const escapedRespPreview = respPreview.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return ctx.reply(`✏️ <b>Edit Response for /${cmd.name}</b>\n\nCurrent response:\n<code>${escapedRespPreview}</code>\n\n<i>Send the new response text. Available variables: {mention}, {user}, {username}, {group}, {user_id}, {date}, {time}</i>\n\nSend /cancel to abort.`, { parse_mode: 'HTML' });
   }
 
   if (action === 'btn_add') {
