@@ -16,7 +16,7 @@
       "username": "sofunsyabi",
       "firstName": "Rfi",
       "lastName": null,
-      "updatedAt": "2026-08-29T15:27:55.426Z"
+      "updatedAt": "2026-08-31T23:30:43.912Z"
     },
     "8521936089": {
       "id": "8521936089",
@@ -508,6 +508,22 @@
         "createdBy": "8521936089",
         "createdAt": "2026-08-29T15:18:36.111Z",
         "updatedAt": "2026-08-29T15:18:36.111Z"
+      },
+      "list": {
+        "id": "cmd_9e76871a",
+        "name": "list",
+        "aliases": [],
+        "enabled": true,
+        "permission": "everyone",
+        "parseMode": "HTML",
+        "response": "📦 𝕂𝔸𝕋𝔸𝕃𝕆𝔾 ℙℝ𝕆𝔻𝕌𝕂\n━━━━━━━━━━━━━━━\n✧ 𝘬𝘦𝘵𝘪𝘬 /𝘯𝘢𝘮𝘢𝘢𝘱𝘭𝘪𝘬𝘢𝘴𝘪 𝘶𝘯𝘵𝘶𝘬 𝘮𝘦𝘭𝘪𝘩𝘢𝘵 𝘋𝘦𝘵𝘢𝘪𝘭 𝘗𝘳𝘰𝘥𝘶𝘬\n✧ 𝘬𝘦𝘵𝘪𝘬 /𝘱𝘢𝘺 𝘶𝘯𝘵𝘶𝘬 𝘮𝘦𝘮𝘣𝘢𝘺𝘢𝘳\n\n𝔸𝕡𝕝𝕚𝕜𝕒𝕤𝕚 ℙ𝕣𝕖𝕞𝕚𝕦𝕞 :\n/alight motion\n/canva\n/capcut\n/viu\n/scribd\n/zoom\n/gemini\n/netflix\n/youtube\n/iqiyi\n/wetv\n/getcontact\n/microsoft\n/picsart\n/meitu\n/grok\n/prime video\n/hbo max\n/wink\n\n𝕊𝕠𝕤𝕞𝕖𝕕 𝔹𝕠𝕠𝕤𝕥𝕖𝕣 :\n/followersinstagram\n/followerstiktok\n/liketiktok\n/tiktoksave\n/tiktokshare\n/likeinstagram\n/instagramkomen\n/instagramsave\n/tiktokviews\n/followersshopee\n/youtubesubscriber\n/whatsappmember\n\nℕ𝕠𝕞𝕠𝕣 𝕂𝕠𝕤𝕠𝕟𝕘 :\n/nokoswhatsapp\n/nokostele\n/nokosshopee\n/nokostiktok\n/nokosdana\n/nokosgojek\n/nokospaypal\n/nokosspotify\n/nokosmcdonald\n/nokostomoro\n/nokosovo\n/nokosbukalapak\n/nokoslalamove",
+        "buttons": [],
+        "cooldown": 3,
+        "deleteTrigger": false,
+        "deleteResponseAfter": null,
+        "createdBy": "1669925773",
+        "createdAt": "2026-08-31T23:30:27.997Z",
+        "updatedAt": "2026-08-31T23:30:27.997Z"
       }
     },
     "-100999111": {

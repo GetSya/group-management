@@ -80,7 +80,9 @@ class CustomCommandsModule extends BaseModule {
       });
     }
 
-    const previewResponse = cmd.response.length > 200 ? cmd.response.slice(0, 197) + '...' : cmd.response;
+    const rawPreview = cmd.response.length > 200 ? cmd.response.slice(0, 197) + '...' : cmd.response;
+    // Escape the preview so any HTML in it renders as literal text, not broken tags
+    const previewResponse = rawPreview.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     const text = `📝 <b>EDIT: /${cmd.name}</b>\n\nStatus: <b>${cmd.enabled ? '✅ Enabled' : '❌ Disabled'}</b>\nPermission: <b>${cmd.permission.toUpperCase()}</b>\nAliases: <b>${cmd.aliases?.length ? cmd.aliases.join(', ') : 'None'}</b>\nButtons: <b>${buttonCount}</b>\n\n<b>Response Preview:</b>\n<i>${previewResponse}</i>`;
 
