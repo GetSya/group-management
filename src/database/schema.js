@@ -135,6 +135,10 @@ const getDefaultGroupSettings = (chatId, title = 'Group') => ({
     openedAt: null,
     openedBy: null,
   },
+  badword: {
+    enabled: true,
+    action: 'delete',
+  },
 });
 
 const DatabaseSchema = z.object({

@@ -130,6 +130,14 @@ class ModerationService {
     const blocks = db.get('blocks') || [];
     const groupBlocks = blocks.filter(b => b.chatId === String(chatId));
 
+    // Toggle Anti Badword: kata tipe 'word' hanya dicek bila badword.enabled
+    let wordFilterOn = true;
+    try {
+      wordFilterOn = db.getGroupSettings(String(chatId)).badword?.enabled !== false;
+    } catch {
+      wordFilterOn = true;
+    }
+
     const userId = String(user.id);
     const username = user.username ? user.username.toLowerCase() : '';
     const lowerText = text.toLowerCase();
@@ -145,9 +153,11 @@ class ModerationService {
         return { blocked: true, type, value: val, action: b.action };
       }
       if (type === 'word' && lowerText.includes(val)) {
+        if (!wordFilterOn) continue;
         return { blocked: true, type, value: val, action: b.action };
       }
       if (type === 'phrase' && lowerText.includes(val)) {
+        if (!wordFilterOn) continue;
         return { blocked: true, type, value: val, action: b.action };
       }
       if (type === 'domain' && lowerText.includes(val)) {

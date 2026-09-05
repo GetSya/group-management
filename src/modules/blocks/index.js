@@ -20,6 +20,7 @@ class BlocksModule extends BaseModule {
     });
 
     const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🔤 Kelola Badword', 'settings:badword')],
       [Markup.button.callback(this.t(lang, 'blocks.clear_btn'), 'blocks:clear')],
       [Markup.button.callback(this.t(lang, 'common.back'), 'settings:back')],
     ]);
@@ -32,8 +33,11 @@ class BlocksModule extends BaseModule {
     if (action === 'clear') {
       const blocks = db.get('blocks') || [];
       const remaining = blocks.filter(b => b.chatId !== chatId);
-      db.set('blocks', null, remaining, true);
-      await ctx.answerCbQuery('All block rules for this group cleared.');
+      const cleared = blocks.length - remaining.length;
+      blocks.length = 0;
+      blocks.push(...remaining);
+      db.queueWrite();
+      await ctx.answerCbQuery(`${cleared} block rules cleared.`);
     }
     return this.render(ctx, chatId);
   }

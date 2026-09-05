@@ -267,10 +267,20 @@ class BackupService {
 
     if (typeof filePathOrData === 'string') {
       // send as document from file
-      return telegram.sendDocument(chatId, { source: await fs.readFile(filePathOrData), filename: path.basename(filePathOrData) }, { caption, parse_mode: 'HTML' });
+      try {
+        return await telegram.sendDocument(chatId, { source: await fs.readFile(filePathOrData), filename: path.basename(filePathOrData) }, { caption, parse_mode: 'HTML' });
+      } catch (e) {
+        const { describeSendError } = require('../utils/telegramErrors');
+        throw new Error(describeSendError(e));
+      }
     } else {
       const buf = Buffer.from(JSON.stringify(filePathOrData, null, 2), 'utf-8');
-      return telegram.sendDocument(chatId, { source: buf, filename: `db-backup-${new Date().toISOString().slice(0,10)}.json` }, { caption, parse_mode: 'HTML' });
+      try {
+        return await telegram.sendDocument(chatId, { source: buf, filename: `db-backup-${new Date().toISOString().slice(0,10)}.json` }, { caption, parse_mode: 'HTML' });
+      } catch (e) {
+        const { describeSendError } = require('../utils/telegramErrors');
+        throw new Error(describeSendError(e));
+      }
     }
   }
 

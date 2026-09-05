@@ -141,8 +141,19 @@
     "alert": "🆘 <b>Admin Alert Triggered!</b>\n\nUser: {mention}\nGroup: <b>{group}</b>\nMessage: <i>{message}</i>"
   },
   "blocks": {
-    "title": "🔐 <b>BLOCKS & BLACKLISTS</b>\n\nTotal Blocked Items: {count}\n\nUse commands to manage:\n• <code>/block @user</code>\n• <code>/blockword keyword</code>\n• <code>/blockdomain example.com</code>",
+    "title": "🔐 <b>BLOCKS & BLACKLISTS</b>\n\nTotal Blocked Items: {count}\n\nUse commands to manage:\n• <code>/block @user</code>\n• <code>/blockword keyword</code>\n• <code>/blockdomain example.com</code>\n• <code>/addbadword word</code> — or use the Badword button below",
     "clear_btn": "🗑 Clear All Blocks"
+  },
+  "badword": {
+    "title": "🔤 <b>ANTI BADWORD</b>\n\nStatus: {status}\nAction: {action}\nTotal Words: {count}\n\nMember messages containing listed words are actioned automatically.",
+    "empty": "List is empty. Click ➕ Add Word.",
+    "toggle_btn": "🔄 Toggle Status",
+    "action_btn": "⚡ Action",
+    "add_btn": "➕ Add Word",
+    "clear_btn": "🗑 Clear All Words",
+    "add_prompt": "✏️ Send the word to block (one word per message, max 50 characters).\nSend /cancel to abort.",
+    "edit_prompt": "✏️ Current word: <code>{word}</code>\n\nSend the replacement now.\nSend /cancel to abort.",
+    "edited": "✏️ Word updated to <b>{word}</b>."
   },
   "porn": {
     "title": "🔞 <b>PORN / NSFW FILTER</b>\n\nStatus: {status}\nMode: {mode}\nAction: {action}",

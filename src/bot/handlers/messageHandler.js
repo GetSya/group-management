@@ -90,7 +90,32 @@ async function messageHandler(ctx) {
         await backupService.saveConfig({ targetUsername: username, targetChatId: chatIdTarget });
         await backupService.restartScheduler();
         sessionService.clearSession(chatId, userId);
-        return ctx.reply(`✅ Target diatur ke ${username || `<code>${chatIdTarget}</code>`}\nBackup otomatis akan dikirim ke tujuan ini setiap ${backupService.getConfig().intervalHours} jam.`, { parse_mode: 'HTML' });
+
+        // Tes konektivitas langsung: kirim pesan tes ke target.
+        // Ini mendeteksi sejak awal kasus "chat not found" (user belum /start bot).
+        const testDest = chatIdTarget || username;
+        let testOk = false;
+        let testHint = '';
+        try {
+          await ctx.telegram.sendMessage(
+            testDest,
+            '✅ <b>Backup target terhubung.</b>\nAuto backup akan dikirim ke chat ini.',
+            { parse_mode: 'HTML' }
+          );
+          testOk = true;
+        } catch (e) {
+          const { describeSendError } = require('../../utils/telegramErrors');
+          testHint = describeSendError(e);
+        }
+
+        const label = username || `<code>${chatIdTarget}</code>`;
+        if (testOk) {
+          return ctx.reply(`✅ Target diatur ke ${label} dan <b>terhubung</b>.\nBackup otomatis akan dikirim ke tujuan ini setiap ${backupService.getConfig().intervalHours} jam.`, { parse_mode: 'HTML' });
+        }
+        return ctx.reply(
+          `⚠️ Target <b>disimpan</b> sebagai ${label}, tetapi <b>belum bisa dikirimi pesan</b>.\n\n${testHint}\n\nTarget tetap tersimpan — setelah user menekan START, gunakan tombol <b>📨 Kirim ke Target</b> untuk mencoba lagi.`,
+          { parse_mode: 'HTML' }
+        );
       }
 
       if (session.action === 'await_restore_file') {
@@ -107,12 +132,14 @@ async function messageHandler(ctx) {
         }
         try {
           await ctx.reply('⏳ Mendownload dan memvalidasi backup...');
-          const file = await ctx.telegram.getFile(doc.file_id);
-          const fileUrl = `https://api.telegram.org/file/bot${env.BOT_TOKEN}/${file.file_path}`;
-          const res = await fetch(fileUrl);
-          if (!res.ok) throw new Error(`Download failed: ${res.status}`);
-          const jsonText = await res.text();
-          const jsonData = JSON.parse(jsonText);
+          const { downloadTelegramFile } = require('../../utils/fileDownload');
+          const buf = await downloadTelegramFile(ctx.telegram, doc.file_id);
+          let jsonData;
+          try {
+            jsonData = JSON.parse(buf.toString('utf-8'));
+          } catch {
+            throw new Error('File bukan JSON valid.');
+          }
           await backupService.restoreFromData(jsonData, doc.file_name);
           sessionService.clearSession(chatId, userId);
           return ctx.reply(`✅ <b>Restore berhasil</b> dari <code>${doc.file_name}</code>\nDatabase telah dipulihkan. Backup sebelumnya diamankan.`, { parse_mode: 'HTML' });
@@ -215,6 +242,42 @@ async function messageHandler(ctx) {
       await db.set('settings', sessionTargetId, settings, true);
       sessionService.clearSession(chatId, userId);
       return ctx.reply('✅ Goodbye message updated successfully.');
+    }
+
+    // Badword add / edit (input kata via dashboard)
+    if (session.module === 'badword' && (session.action === 'add_word' || session.action === 'edit_word')) {
+      const { addWord } = require('../../modules/badword');
+      const langBw = db.getGroupSettings(sessionTargetId).language || 'en';
+      if (session.action === 'add_word') {
+        try {
+          const entry = await addWord(sessionTargetId, text);
+          sessionService.clearSession(chatId, userId);
+          return ctx.reply(`🔤 Kata <b>"${entry.value}"</b> ditambahkan ke daftar badword.`, { parse_mode: 'HTML' });
+        } catch (e) {
+          return ctx.reply(`❌ ${e.message}\nKirim kata lain atau /cancel untuk batal.`, { parse_mode: 'HTML' });
+        }
+      }
+      // edit_word
+      const blocks = db.get('blocks') || [];
+      const entry = blocks.find(b => b.id === session.wordId && b.chatId === sessionTargetId);
+      if (!entry) {
+        sessionService.clearSession(chatId, userId);
+        return ctx.reply('❌ Kata tidak ditemukan (mungkin sudah dihapus).');
+      }
+      const clean = String(text || '').trim().toLowerCase();
+      if (!clean || clean.length > 50) {
+        return ctx.reply('❌ Kata tidak valid (1-50 karakter). Kirim lagi atau /cancel.', { parse_mode: 'HTML' });
+      }
+      const dupe = blocks.some(
+        b => b.id !== entry.id && b.chatId === sessionTargetId && (b.type || '').toLowerCase() === 'word' && String(b.value).toLowerCase() === clean
+      );
+      if (dupe) {
+        return ctx.reply(`❌ "<code>${clean}</code>" sudah ada di daftar. Kirim kata lain atau /cancel.`, { parse_mode: 'HTML' });
+      }
+      entry.value = clean;
+      db.queueWrite();
+      sessionService.clearSession(chatId, userId);
+      return ctx.reply(i18n.t(langBw, 'badword.edited', { word: clean }), { parse_mode: 'HTML' });
     }
 
     // --- Custom Commands Interactive Sessions ---

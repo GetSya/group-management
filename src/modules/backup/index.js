@@ -145,7 +145,7 @@ class BackupModule extends BaseModule {
         if (sent) return ctx.reply(`✅ Backup berhasil dikirim ke ${backupService.getConfig().targetUsername || backupService.getConfig().targetChatId}`);
         return ctx.reply('❌ Gagal mengirim backup. Periksa target sudah benar dan bot sudah di-start oleh user target.');
       } catch (e) {
-        return ctx.reply(`❌ Gagal mengirim: ${e.message}\nPastikan target sudah /start bot dan username valid.`);
+        return ctx.reply(`${e.message}\nPastikan target sudah /start bot dan username valid.`, { parse_mode: 'HTML' });
       }
     }
 

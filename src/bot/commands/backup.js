@@ -74,7 +74,7 @@ async function backupCommand(ctx) {
       const cfg = backupService.getConfig();
       return ctx.reply(`✅ Backup terkirim ke ${cfg.targetUsername || cfg.targetChatId}`);
     } catch (e) {
-      return ctx.reply(`❌ Gagal mengirim: ${e.message}\nAtur target via dashboard Backup ➔ Atur Target.`);
+      return ctx.reply(`${e.message}\nAtur target via dashboard Backup ➔ Atur Target.`, { parse_mode: 'HTML' });
     }
   }
 
@@ -137,11 +137,14 @@ async function restoreCommand(ctx) {
     }
     try {
       await ctx.reply('⏳ Mendownload dan memvalidasi backup...');
-      const file = await ctx.telegram.getFile(repliedDoc.file_id);
-      const fileUrl = `https://api.telegram.org/file/bot${env.BOT_TOKEN}/${file.file_path}`;
-      const res = await fetch(fileUrl);
-      if (!res.ok) throw new Error(`Download gagal: HTTP ${res.status}`);
-      const jsonData = JSON.parse(await res.text());
+      const { downloadTelegramFile } = require('../../utils/fileDownload');
+      const buf = await downloadTelegramFile(ctx.telegram, repliedDoc.file_id);
+      let jsonData;
+      try {
+        jsonData = JSON.parse(buf.toString('utf-8'));
+      } catch {
+        throw new Error('File bukan JSON valid.');
+      }
       await backupService.restoreFromData(jsonData, repliedDoc.file_name);
       logger.info({ file: repliedDoc.file_name, by: ctx.from?.id }, 'Backup restored via /restore reply');
       return ctx.reply(

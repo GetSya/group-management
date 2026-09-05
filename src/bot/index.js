@@ -21,6 +21,7 @@ const tagAdminsCommand = require('./commands/tagadmins');
 const infoCommand = require('./commands/info');
 const { backupCommand, restoreCommand } = require('./commands/backup');
 const { closeCommand, openCommand, lockStatusCommand } = require('./commands/grouplock');
+const { addBadwordCommand, delBadwordCommand, editBadwordCommand, listBadwordsCommand } = require('./commands/badword');
 
 // Handlers & Callbacks
 const callbackRouter = require('./callbacks/callbackRouter');
@@ -65,6 +66,11 @@ function createBot() {
   bot.command(['close', 'tutup', 'lock'], closeCommand);
   bot.command(['open', 'buka', 'unlock'], openCommand);
   bot.command(['lockstatus', 'cekstatus', 'statusgrup'], lockStatusCommand);
+  // Anti badword — cek admin di dalam command (dukung grup + private)
+  bot.command(['addbadword'], addBadwordCommand);
+  bot.command(['delbadword', 'delbadwords', 'removebadword'], delBadwordCommand);
+  bot.command(['editbadword'], editBadwordCommand);
+  bot.command(['badwords', 'listbadword', 'listbadwords'], listBadwordsCommand);
 
   // Callback Query Central Router
   bot.on('callback_query', callbackRouter);

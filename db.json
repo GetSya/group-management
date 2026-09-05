@@ -7,6 +7,14 @@
       "type": "supergroup",
       "isActive": true,
       "joinedAt": "2026-08-29T14:43:54.435Z"
+    },
+    "-1004429820868": {
+      "id": "-1004429820868",
+      "chatId": "-1004429820868",
+      "title": "Xiamo Group",
+      "type": "supergroup",
+      "isActive": true,
+      "joinedAt": "2026-09-05T13:40:16.241Z"
     }
   },
   "users": {
@@ -16,7 +24,7 @@
       "username": "sofunsyabi",
       "firstName": "Rfi",
       "lastName": null,
-      "updatedAt": "2026-09-05T14:16:24.828Z"
+      "updatedAt": "2026-09-05T15:00:39.776Z"
     },
     "8521936089": {
       "id": "8521936089",
@@ -33,152 +41,17 @@
       "firstName": "xiamogroup",
       "lastName": null,
       "updatedAt": "2026-08-29T14:47:06.306Z"
+    },
+    "6712726941": {
+      "id": "6712726941",
+      "telegramId": "6712726941",
+      "username": "chenxiamomo",
+      "firstName": "momo",
+      "lastName": null,
+      "updatedAt": "2026-09-05T13:49:51.980Z"
     }
   },
   "settings": {
-    "1669925773": {
-      "chatId": "1669925773",
-      "title": "Group",
-      "language": "en",
-      "isActive": true,
-      "createdAt": "2026-09-05T14:04:52.019Z",
-      "updatedAt": "2026-09-05T14:04:52.019Z",
-      "media": {
-        "photo": true,
-        "video": true,
-        "audio": true,
-        "voice": true,
-        "document": true,
-        "sticker": true,
-        "animation": true,
-        "contact": false,
-        "location": false,
-        "venue": false,
-        "poll": true,
-        "dice": true
-      },
-      "regulation": {
-        "enabled": false,
-        "rules": "1. No spamming or flooding\n2. Be respectful to all members\n3. No offensive or adult content\n4. Follow admin instructions"
-      },
-      "antispam": {
-        "enabled": true,
-        "threshold": 5,
-        "window": 10,
-        "action": "delete",
-        "checkDuplicate": true,
-        "checkUrlSpam": true,
-        "checkMentionSpam": true
-      },
-      "antiflood": {
-        "enabled": true,
-        "threshold": 5,
-        "window": 10,
-        "action": "mute"
-      },
-      "welcome": {
-        "enabled": true,
-        "message": "👋 Welcome {mention} to {group}!\nPlease read and follow the group rules.",
-        "deleteAfter": 0,
-        "cardEnabled": false,
-        "backgroundFileId": null,
-        "backgroundUrl": null
-      },
-      "goodbye": {
-        "enabled": false,
-        "message": "👋 Goodbye {user}!",
-        "deleteAfter": 60,
-        "cardEnabled": false,
-        "backgroundFileId": null,
-        "backgroundUrl": null
-      },
-      "alphabets": {
-        "enabled": false,
-        "allowedScripts": [
-          "LATIN"
-        ],
-        "action": "delete"
-      },
-      "captcha": {
-        "enabled": false,
-        "type": "button",
-        "timeout": 120,
-        "action": "kick"
-      },
-      "checks": {
-        "enabled": false,
-        "blockBots": true,
-        "requireUsername": false,
-        "action": "kick"
-      },
-      "adminMention": {
-        "enabled": true,
-        "cooldown": 60,
-        "alertInGroup": true
-      },
-      "porn": {
-        "enabled": false,
-        "mode": "disabled",
-        "action": "delete"
-      },
-      "warns": {
-        "enabled": true,
-        "maxWarns": 3,
-        "action": "mute",
-        "muteDuration": 86400
-      },
-      "night": {
-        "enabled": false,
-        "start": "23:00",
-        "end": "06:00",
-        "timezone": "Asia/Jakarta",
-        "action": "delete",
-        "adminBypass": true
-      },
-      "tag": {
-        "enabled": true,
-        "allowTagAdmins": true,
-        "cooldown": 120
-      },
-      "link": {
-        "enabled": true,
-        "allowTelegramLinks": false,
-        "whitelistedDomains": [
-          "youtube.com",
-          "youtu.be",
-          "github.com",
-          "google.com"
-        ],
-        "action": "delete"
-      },
-      "guardian": {
-        "enabled": true,
-        "threshold": 10,
-        "window": 10,
-        "duration": 600,
-        "action": "kick"
-      },
-      "approval": {
-        "enabled": false,
-        "autoApprove": false,
-        "notifyAdmins": true
-      },
-      "deletingMessages": {
-        "enabled": true,
-        "deleteJoin": true,
-        "deleteLeave": true,
-        "deleteCommands": true,
-        "deleteBot": false,
-        "timer": 30
-      },
-      "groupLock": {
-        "isClosed": false,
-        "closedAt": null,
-        "closedBy": null,
-        "openedAt": null,
-        "openedBy": null
-      }
-    },
     "-100111": {
       "chatId": "-100111",
       "title": "Group",
@@ -445,7 +318,7 @@
       "language": "id",
       "isActive": true,
       "createdAt": "2026-08-29T14:43:54.435Z",
-      "updatedAt": "2026-09-05T14:09:13.499Z",
+      "updatedAt": "2026-09-05T14:41:29.963Z",
       "media": {
         "photo": false,
         "video": true,
@@ -573,10 +446,146 @@
       },
       "groupLock": {
         "isClosed": false,
-        "closedAt": "2026-09-05T14:09:10.129Z",
+        "closedAt": "2026-09-05T14:41:27.848Z",
         "closedBy": "1669925773",
-        "openedAt": "2026-09-05T14:09:13.499Z",
+        "openedAt": "2026-09-05T14:41:29.963Z",
         "openedBy": "1669925773"
+      }
+    },
+    "-1004429820868": {
+      "chatId": "-1004429820868",
+      "title": "Group",
+      "language": "en",
+      "isActive": true,
+      "createdAt": "2026-09-05T13:40:16.241Z",
+      "updatedAt": "2026-09-05T13:40:16.241Z",
+      "media": {
+        "photo": true,
+        "video": true,
+        "audio": true,
+        "voice": true,
+        "document": true,
+        "sticker": true,
+        "animation": true,
+        "contact": false,
+        "location": false,
+        "venue": false,
+        "poll": true,
+        "dice": true
+      },
+      "regulation": {
+        "enabled": false,
+        "rules": "1. No spamming or flooding\n2. Be respectful to all members\n3. No offensive or adult content\n4. Follow admin instructions"
+      },
+      "antispam": {
+        "enabled": true,
+        "threshold": 5,
+        "window": 10,
+        "action": "delete",
+        "checkDuplicate": true,
+        "checkUrlSpam": true,
+        "checkMentionSpam": true
+      },
+      "antiflood": {
+        "enabled": true,
+        "threshold": 5,
+        "window": 10,
+        "action": "mute"
+      },
+      "welcome": {
+        "enabled": true,
+        "message": "👋 Welcome {mention} to {group}!\nPlease read and follow the group rules.",
+        "deleteAfter": 0,
+        "cardEnabled": false,
+        "backgroundFileId": null,
+        "backgroundUrl": null
+      },
+      "goodbye": {
+        "enabled": false,
+        "message": "👋 Goodbye {user}!",
+        "deleteAfter": 60,
+        "cardEnabled": false,
+        "backgroundFileId": null,
+        "backgroundUrl": null
+      },
+      "alphabets": {
+        "enabled": false,
+        "allowedScripts": [
+          "LATIN"
+        ],
+        "action": "delete"
+      },
+      "captcha": {
+        "enabled": false,
+        "type": "button",
+        "timeout": 120,
+        "action": "kick"
+      },
+      "checks": {
+        "enabled": false,
+        "blockBots": true,
+        "requireUsername": false,
+        "action": "kick"
+      },
+      "adminMention": {
+        "enabled": true,
+        "cooldown": 60,
+        "alertInGroup": true
+      },
+      "porn": {
+        "enabled": false,
+        "mode": "disabled",
+        "action": "delete"
+      },
+      "warns": {
+        "enabled": true,
+        "maxWarns": 3,
+        "action": "mute",
+        "muteDuration": 86400
+      },
+      "night": {
+        "enabled": false,
+        "start": "23:00",
+        "end": "06:00",
+        "timezone": "Asia/Jakarta",
+        "action": "delete",
+        "adminBypass": true
+      },
+      "tag": {
+        "enabled": true,
+        "allowTagAdmins": true,
+        "cooldown": 120
+      },
+      "link": {
+        "enabled": true,
+        "allowTelegramLinks": false,
+        "whitelistedDomains": [
+          "youtube.com",
+          "youtu.be",
+          "github.com",
+          "google.com"
+        ],
+        "action": "delete"
+      },
+      "guardian": {
+        "enabled": true,
+        "threshold": 10,
+        "window": 10,
+        "duration": 600,
+        "action": "kick"
+      },
+      "approval": {
+        "enabled": false,
+        "autoApprove": false,
+        "notifyAdmins": true
+      },
+      "deletingMessages": {
+        "enabled": true,
+        "deleteJoin": true,
+        "deleteLeave": true,
+        "deleteCommands": true,
+        "deleteBot": false,
+        "timer": 30
       }
     }
   },
@@ -678,21 +687,21 @@
         "createdAt": "2026-08-31T23:30:27.997Z",
         "updatedAt": "2026-08-31T23:30:27.997Z"
       },
-      "jing": {
-        "id": "cmd_cdb443bb",
-        "name": "jing",
+      "anjing": {
+        "id": "cmd_65d9f0fa",
+        "name": "anjing",
         "aliases": [],
         "enabled": true,
         "permission": "everyone",
         "parseMode": "HTML",
-        "response": "anjing",
+        "response": "lu anjing",
         "buttons": [],
         "cooldown": 3,
         "deleteTrigger": false,
         "deleteResponseAfter": null,
         "createdBy": "1669925773",
-        "createdAt": "2026-09-05T14:04:44.717Z",
-        "updatedAt": "2026-09-05T14:04:44.717Z"
+        "createdAt": "2026-09-05T13:45:16.774Z",
+        "updatedAt": "2026-09-05T13:45:16.774Z"
       }
     },
     "-100999111": {
@@ -784,27 +793,27 @@
           "uses": 1,
           "lastUsedAt": "2026-08-29T14:56:48.502Z"
         },
-        "jing": {
+        "anjing": {
           "uses": 1,
-          "lastUsedAt": "2026-09-05T14:05:00.054Z"
+          "lastUsedAt": "2026-09-05T13:45:21.372Z"
         }
       }
     }
   },
   "logs": [
     {
-      "id": "lock-1788617350243",
+      "id": "lock-1788619288196",
       "chatId": "-1004401340988",
       "adminId": "1669925773",
       "actionType": "group_close",
-      "createdAt": "2026-09-05T14:09:10.243Z"
+      "createdAt": "2026-09-05T14:41:28.196Z"
     },
     {
-      "id": "unlock-1788617353620",
+      "id": "unlock-1788619290327",
       "chatId": "-1004401340988",
       "adminId": "1669925773",
       "actionType": "group_open",
-      "createdAt": "2026-09-05T14:09:13.620Z"
+      "createdAt": "2026-09-05T14:41:30.327Z"
     }
   ],
   "backupConfig": {
@@ -813,10 +822,10 @@
     "targetUsername": null,
     "targetChatId": null,
     "retentionCount": 20,
-    "lastBackupAt": "2026-09-01T15:11:35.958Z",
-    "nextBackupAt": "2026-09-05T15:16:09.950Z",
+    "lastBackupAt": "2026-09-05T15:00:00.824Z",
+    "nextBackupAt": "2026-09-05T16:00:00.824Z",
     "autoSend": true,
-    "updatedAt": "2026-09-05T14:16:09.951Z"
+    "updatedAt": "2026-09-05T15:00:00.824Z"
   },
   "backups": []
 }

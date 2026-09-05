@@ -141,8 +141,19 @@
     "alert": "🆘 <b>Laporan Admin Terpanggil!</b>\n\nPengirim: {mention}\nGrup: <b>{group}</b>\nPesan: <i>{message}</i>"
   },
   "blocks": {
-    "title": "🔐 <b>BLOKIR & DAFTAR HITAM</b>\n\nTotal Item Diblokir: {count}\n\nGunakan perintah berikut:\n• <code>/block @user</code>\n• <code>/blockword kata</code>\n• <code>/blockdomain example.com</code>",
+    "title": "🔐 <b>BLOKIR & DAFTAR HITAM</b>\n\nTotal Item Diblokir: {count}\n\nGunakan perintah berikut:\n• <code>/block @user</code>\n• <code>/blockword kata</code>\n• <code>/blockdomain example.com</code>\n• <code>/addbadword kata</code> — kelola via tombol Badword di bawah",
     "clear_btn": "🗑 Hapus Semua Blokir"
+  },
+  "badword": {
+    "title": "🔤 <b>ANTI BADWORD</b>\n\nStatus: {status}\nTindakan: {action}\nTotal Kata: {count}\n\nPesan member yang mengandung kata di daftar akan otomatis ditindak.",
+    "empty": "Daftar masih kosong. Klik ➕ Tambah Kata.",
+    "toggle_btn": "🔄 Ganti Status",
+    "action_btn": "⚡ Tindakan",
+    "add_btn": "➕ Tambah Kata",
+    "clear_btn": "🗑 Hapus Semua Kata",
+    "add_prompt": "✏️ Kirim kata yang ingin diblokir (1 kata/pesan, max 50 karakter).\nKirim /cancel untuk batal.",
+    "edit_prompt": "✏️ Kata saat ini: <code>{word}</code>\n\nKirim kata penggantinya sekarang.\nKirim /cancel untuk batal.",
+    "edited": "✏️ Kata diperbarui menjadi <b>{word}</b>."
   },
   "porn": {
     "title": "🔞 <b>FILTER PORNOGRAFI / NSFW</b>\n\nStatus: {status}\nMode: {mode}\nTindakan: {action}",
