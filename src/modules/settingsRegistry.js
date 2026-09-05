@@ -21,6 +21,7 @@ const antiDeleteModule = require('./antiDelete');
 const langModule = require('./lang');
 const otherModule = require('./other');
 const customCommandsModule = require('./customCommands');
+const backupModule = require('./backup');
 
 class SettingsRegistry {
   constructor() {
@@ -64,6 +65,7 @@ class SettingsRegistry {
     this.register(langModule);
     this.register(otherModule);
     this.register(customCommandsModule);
+    this.register(backupModule);
   }
 }
 

@@ -152,6 +152,29 @@ const DatabaseSchema = z.object({
   customCommands: z.record(z.any()).default({}),
   statistics: z.record(z.any()).default({}),
   logs: z.array(z.any()).default([]),
+  backupConfig: z
+    .object({
+      enabled: z.boolean().default(true),
+      intervalHours: z.number().min(1).max(168).default(1),
+      targetUsername: z.string().nullable().default(null),
+      targetChatId: z.string().nullable().default(null),
+      retentionCount: z.number().min(1).max(100).default(20),
+      lastBackupAt: z.string().nullable().default(null),
+      nextBackupAt: z.string().nullable().default(null),
+      autoSend: z.boolean().default(true),
+    })
+    .passthrough()
+    .default({
+      enabled: true,
+      intervalHours: 1,
+      targetUsername: null,
+      targetChatId: null,
+      retentionCount: 20,
+      lastBackupAt: null,
+      nextBackupAt: null,
+      autoSend: true,
+    }),
+  backups: z.array(z.any()).default([]),
 });
 
 const getEmptyDatabase = () => ({
@@ -182,6 +205,17 @@ const getEmptyDatabase = () => ({
   customCommands: {},
   statistics: {},
   logs: [],
+  backupConfig: {
+    enabled: true,
+    intervalHours: 1,
+    targetUsername: null,
+    targetChatId: null,
+    retentionCount: 20,
+    lastBackupAt: null,
+    nextBackupAt: null,
+    autoSend: true,
+  },
+  backups: [],
 });
 
 module.exports = {

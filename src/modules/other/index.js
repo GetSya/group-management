@@ -39,6 +39,9 @@ class OtherModule extends BaseModule {
         Markup.button.callback('📋 User Management', 'other:users'),
       ],
       [
+        Markup.button.callback('💾 Backup & Restore', 'settings:backup'),
+      ],
+      [
         Markup.button.callback('🔧 Advanced Settings', 'other:advanced'),
       ],
       [Markup.button.callback(this.t(lang, 'common.back'), 'settings:back')],

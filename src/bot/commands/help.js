@@ -10,6 +10,8 @@ async function helpCommand(ctx) {
 • <code>/blockword keyword</code> - Blacklist a specific word
 • <code>/blockdomain domain.com</code> - Block a domain link
 • <code>/tagadmins [message]</code> - Mention all group administrators
+• <code>/backup [create|list|info|send|export]</code> - Create & manage db.json backups
+• <code>/restore [filename]</code> - Restore db.json (or reply to a .json file)
 
 <b>General Commands:</b>
 • <code>/rules</code> - View current group regulations

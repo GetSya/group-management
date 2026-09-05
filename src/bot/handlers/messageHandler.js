@@ -24,11 +24,96 @@ async function messageHandler(ctx) {
 
   // 1. Check if user is in an active session (e.g. typing new rules, custom command creation)
   const session = sessionService.getSession(chatId, userId);
-  if (session && text) {
+  if (session) {
+    // Handle /cancel for any session type
     if (text === '/cancel') {
       sessionService.clearSession(chatId, userId);
       return ctx.reply('❌ Action cancelled.');
     }
+
+    // --- Backup sessions (handle both text and document) ---
+    if (session.module === 'backup') {
+      const backupService = require('../../database/backup');
+      const env = require('../../config/env');
+
+      if (session.action === 'set_interval') {
+        if (!text) return ctx.reply('❌ Kirim angka 1-168 untuk interval jam. Contoh: 1');
+        const val = parseInt(text.trim(), 10);
+        if (isNaN(val) || val < 1 || val > 168) {
+          return ctx.reply('❌ Interval tidak valid. Masukkan angka 1-168 (jam). Contoh: <code>1</code> atau <code>6</code>', { parse_mode: 'HTML' });
+        }
+        await backupService.saveConfig({ intervalHours: val });
+        await backupService.restartScheduler();
+        sessionService.clearSession(chatId, userId);
+        const next = backupService.getConfig().nextBackupAt ? new Date(backupService.getConfig().nextBackupAt).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-';
+        return ctx.reply(`✅ Interval auto backup diatur ke <b>${val} jam</b>\nJadwal berikutnya: ${next}\nCron: <code>${backupService._buildCronExpression(val)}</code>`, { parse_mode: 'HTML' });
+      }
+
+      if (session.action === 'set_target') {
+        if (!text) return ctx.reply('❌ Kirim @username atau ID. Contoh: @admin');
+        const raw = text.trim();
+        if (raw === '-' || raw.toLowerCase() === 'hapus' || raw.toLowerCase() === 'clear') {
+          await backupService.saveConfig({ targetUsername: null, targetChatId: null });
+          sessionService.clearSession(chatId, userId);
+          return ctx.reply('✅ Target pengiriman backup dihapus. Auto backup tetap dibuat lokal.');
+        }
+        // Normalize: ensure @ prefix for username
+        let username = null;
+        let chatIdTarget = null;
+        if (/^\d+$/.test(raw)) {
+          chatIdTarget = raw;
+          username = null;
+        } else if (/^@?[a-zA-Z0-9_]{5,32}$/.test(raw.replace(/^@/, ''))) {
+          username = raw.startsWith('@') ? raw : `@${raw}`;
+          // Try to resolve chatId via getChat
+          try {
+            const chat = await ctx.telegram.getChat(username);
+            chatIdTarget = String(chat.id);
+          } catch (e) {
+            // keep username, chatId will be resolved on send
+            chatIdTarget = null;
+          }
+        } else {
+          return ctx.reply('❌ Format tidak valid. Gunakan <code>@username</code> atau ID numerik.', { parse_mode: 'HTML' });
+        }
+        await backupService.saveConfig({ targetUsername: username, targetChatId: chatIdTarget });
+        await backupService.restartScheduler();
+        sessionService.clearSession(chatId, userId);
+        return ctx.reply(`✅ Target diatur ke ${username || `<code>${chatIdTarget}</code>`}\nBackup otomatis akan dikirim ke tujuan ini setiap ${backupService.getConfig().intervalHours} jam.`, { parse_mode: 'HTML' });
+      }
+
+      if (session.action === 'await_restore_file') {
+        // Expect document with .json
+        const doc = ctx.message.document;
+        if (!doc) {
+          return ctx.reply('❌ Kirim file <b>.json</b> sebagai Document. Contoh: kirim file backup <code>db-*.json</code>.\nKirim /cancel untuk batal.', { parse_mode: 'HTML' });
+        }
+        if (!doc.file_name || !doc.file_name.endsWith('.json')) {
+          return ctx.reply('❌ File harus berformat <code>.json</code>. Pilih file backup yang valid.', { parse_mode: 'HTML' });
+        }
+        if (doc.file_size && doc.file_size > 20 * 1024 * 1024) {
+          return ctx.reply('❌ File terlalu besar (max 20MB).');
+        }
+        try {
+          await ctx.reply('⏳ Mendownload dan memvalidasi backup...');
+          const file = await ctx.telegram.getFile(doc.file_id);
+          const fileUrl = `https://api.telegram.org/file/bot${env.BOT_TOKEN}/${file.file_path}`;
+          const res = await fetch(fileUrl);
+          if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+          const jsonText = await res.text();
+          const jsonData = JSON.parse(jsonText);
+          await backupService.restoreFromData(jsonData, doc.file_name);
+          sessionService.clearSession(chatId, userId);
+          return ctx.reply(`✅ <b>Restore berhasil</b> dari <code>${doc.file_name}</code>\nDatabase telah dipulihkan. Backup sebelumnya diamankan.`, { parse_mode: 'HTML' });
+        } catch (e) {
+          logger.warn({ error: e.message }, 'Restore from upload failed');
+          return ctx.reply(`❌ Restore gagal: ${e.message}\nPastikan file adalah backup db.json yang valid.`);
+        }
+      }
+    }
+
+    // Only proceed to text-based sessions if text exists
+    if (!text) return;
 
     const settings = db.getGroupSettings(chatId);
     const lang = settings.language || 'en';

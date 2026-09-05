@@ -27,6 +27,15 @@ async function bootstrap() {
       '✅ XiamoStore Bot — Group Management By XiamoStore — connected to Telegram successfully!'
     );
 
+    // 4b. Start Auto Backup Scheduler (hourly custom, send to username)
+    try {
+      const backupService = require('./database/backup');
+      await backupService.init();
+      backupService.startScheduler(bot);
+    } catch (e) {
+      logger.warn({ error: e.message }, 'Failed to start backup scheduler');
+    }
+
     // 5. Graceful Shutdown Handlers (must be set BEFORE launch for Telegraf v4)
     const shutdown = async (signal) => {
       logger.info({ signal }, 'Stopping XiamoStore Bot gracefully...');

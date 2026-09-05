@@ -18,6 +18,7 @@ const { warnsCommand, resetWarnsCommand } = require('./commands/warns');
 const { blockCommand, blockWordCommand, blockDomainCommand } = require('./commands/block');
 const adminAlertCommand = require('./commands/admin');
 const tagAdminsCommand = require('./commands/tagadmins');
+const { backupCommand, restoreCommand } = require('./commands/backup');
 
 // Handlers & Callbacks
 const callbackRouter = require('./callbacks/callbackRouter');
@@ -52,6 +53,8 @@ function createBot() {
   bot.command('blockword', requireAdmin, blockWordCommand);
   bot.command('blockdomain', requireAdmin, blockDomainCommand);
   bot.command('tagadmins', tagAdminsCommand);
+  bot.command('backup', requireAdmin, backupCommand);
+  bot.command('restore', requireAdmin, restoreCommand);
 
   // Callback Query Central Router
   bot.on('callback_query', callbackRouter);

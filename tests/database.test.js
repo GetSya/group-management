@@ -1,3 +1,16 @@
+// Isolasi test: paksa file driver + db sementara (jangan sentuh bin JsonVault produksi).
+// Harus sebelum require database karena dotenv tidak menimpa env yang sudah ada.
+process.env.DB_DRIVER = 'file';
+if (!process.env.DB_PATH) {
+  const __fs = require('fs');
+  const __os = require('os');
+  const __path = require('path');
+  process.env.DB_PATH = __path.join(
+    __fs.mkdtempSync(__path.join(__os.tmpdir(), 'bot-db-test-')),
+    'db.json'
+  );
+}
+
 const { describe, it } = require('node:test');
 const assert = require('node:assert');
 const db = require('../src/database/database');
