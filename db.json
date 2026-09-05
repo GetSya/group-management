@@ -16,7 +16,7 @@
       "username": "sofunsyabi",
       "firstName": "Rfi",
       "lastName": null,
-      "updatedAt": "2026-09-05T00:28:26.974Z"
+      "updatedAt": "2026-09-05T13:36:20.680Z"
     },
     "8521936089": {
       "id": "8521936089",
@@ -341,7 +341,7 @@
         "message": "Selamat Datang {mention} di grup yang aneh ini {group}",
         "deleteAfter": 30,
         "cardEnabled": true,
-        "backgroundFileId": "AgACAgUAAyEFAAMBBlciPAACAV5qm2IpghJ_o8chSJns5t0Lo9hsygACkxRrG5zB2FRLfBe6vSaCyAEAAwIAA3gAAz0E",
+        "backgroundFileId": "AgACAgUAAyEFAAMBBlciPAACAXJqnBrO52U37U91Ib2Wd_GL5NpRbgACJhFrG9fe4FRxNUqykvdUOgEAAwIAA3kAAz0E",
         "backgroundUrl": null
       },
       "goodbye": {
@@ -629,9 +629,9 @@
     "targetChatId": null,
     "retentionCount": 20,
     "lastBackupAt": "2026-09-01T15:11:35.958Z",
-    "nextBackupAt": "2026-09-05T01:34:15.868Z",
+    "nextBackupAt": "2026-09-05T14:35:08.837Z",
     "autoSend": true,
-    "updatedAt": "2026-09-05T00:34:15.869Z"
+    "updatedAt": "2026-09-05T13:35:08.843Z"
   },
   "backups": []
 }
