@@ -21,6 +21,7 @@
   "author": "Antigravity Senior Node.js Engineer",
   "license": "MIT",
   "dependencies": {
+    "@napi-rs/canvas": "^1.0.8",
     "dotenv": "^16.4.5",
     "node-cron": "^3.0.3",
     "pino": "^9.5.0",

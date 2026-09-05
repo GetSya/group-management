@@ -16,7 +16,7 @@
       "username": "sofunsyabi",
       "firstName": "Rfi",
       "lastName": null,
-      "updatedAt": "2026-09-01T14:58:11.139Z"
+      "updatedAt": "2026-09-05T00:28:26.974Z"
     },
     "8521936089": {
       "id": "8521936089",
@@ -24,7 +24,7 @@
       "username": "arsrfii",
       "firstName": "Arasya",
       "lastName": "Eadi",
-      "updatedAt": "2026-08-29T15:18:36.110Z"
+      "updatedAt": "2026-09-05T00:34:24.263Z"
     },
     "8821123120": {
       "id": "8821123120",
@@ -302,7 +302,7 @@
       "language": "id",
       "isActive": true,
       "createdAt": "2026-08-29T14:43:54.435Z",
-      "updatedAt": "2026-08-29T15:05:01.992Z",
+      "updatedAt": "2026-09-05T00:27:23.224Z",
       "media": {
         "photo": false,
         "video": true,
@@ -339,7 +339,10 @@
       "welcome": {
         "enabled": true,
         "message": "Selamat Datang {mention} di grup yang aneh ini {group}",
-        "deleteAfter": 30
+        "deleteAfter": 30,
+        "cardEnabled": true,
+        "backgroundFileId": "AgACAgUAAyEFAAMBBlciPAACAV5qm2IpghJ_o8chSJns5t0Lo9hsygACkxRrG5zB2FRLfBe6vSaCyAEAAwIAA3gAAz0E",
+        "backgroundUrl": null
       },
       "goodbye": {
         "enabled": true,
@@ -626,9 +629,9 @@
     "targetChatId": null,
     "retentionCount": 20,
     "lastBackupAt": "2026-09-01T15:11:35.958Z",
-    "nextBackupAt": "2026-09-01T16:11:35.958Z",
+    "nextBackupAt": "2026-09-05T01:34:15.868Z",
     "autoSend": true,
-    "updatedAt": "2026-09-01T15:11:41.303Z"
+    "updatedAt": "2026-09-05T00:34:15.869Z"
   },
   "backups": []
 }
