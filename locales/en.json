@@ -39,6 +39,7 @@
     "guardian": "👮 Guardian Bot",
     "approval": "📚 Approval mode",
     "deleting": "🗑 Deleting Messages",
+    "grouplock": "🔒 Open/Close",
     "lang": "🇬🇧 Lang",
     "other": "▶️ Other"
   },
@@ -157,6 +158,19 @@
   "night": {
     "title": "🌙 <b>NIGHT MODE</b>\n\nStatus: {status}\nQuiet Hours: <b>{start} - {end}</b>\nTimezone: <b>{timezone}</b>\nAction: {action}\nAdmin Bypass: {adminBypass}",
     "toggle_btn": "🔄 Toggle Status"
+  },
+  "grouplock": {
+    "title": "🔒 <b>OPEN / CLOSE GROUP</b>\n\nStatus: {status}\nClosed at: {closedAt}\nClosed by: {closedBy}\n\nClosed = only admins can send messages.\nOpen = all members can send messages again.",
+    "opened": "OPEN",
+    "closed": "CLOSED",
+    "open_btn": "🔓 Open Group",
+    "close_btn": "🔒 Close Group",
+    "status_btn": "📊 Check Status",
+    "closed_msg": "🔒 <b>Group closed.</b>\nOnly admins can send messages.",
+    "opened_msg": "🔓 <b>Group opened.</b>\nAll members can send messages again.",
+    "status_closed": "🔒 Group is currently CLOSED",
+    "status_open": "🔓 Group is currently OPEN",
+    "need_admin": "⚠️ Bot must be admin with <i>Restrict Members</i> permission to open/close the group."
   },
   "tag": {
     "title": "🔔 <b>TAG & MENTIONS</b>\n\nStatus: {status}\nAllow /tagadmins: {allowTagAdmins}\nCooldown: {cooldown}s",

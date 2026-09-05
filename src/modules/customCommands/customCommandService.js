@@ -52,7 +52,7 @@ class CustomCommandService {
   async checkPermission(ctx, command) {
     if (command.permission === 'everyone') return true;
     if (command.permission === 'admin') {
-      return isAdmin(ctx.telegram, ctx.chat.id, ctx.from.id);
+      return isAdmin(ctx.telegram, (ctx.targetChatId || ctx.chat.id), ctx.from.id);
     }
     return true;
   }
@@ -75,7 +75,7 @@ class CustomCommandService {
   }
 
   async executeCommand(ctx, commandName, isFromButton = false) {
-    const chatId = String(ctx.chat.id);
+    const chatId = String(ctx.targetChatId || ctx.chat.id);
     const from = ctx.from;
     if (!from) return false;
     const userId = String(from.id);

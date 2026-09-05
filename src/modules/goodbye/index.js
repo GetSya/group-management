@@ -50,7 +50,7 @@ class GoodbyeModule extends BaseModule {
   }
 
   async handleCallback(ctx, action, _params) {
-    const chatId = String(ctx.chat.id);
+    const chatId = String(ctx.targetChatId || ctx.chat.id);
     const userId = String(ctx.from.id);
     const settings = db.getGroupSettings(chatId);
     const goodbye = { ...settings.goodbye };
@@ -64,7 +64,7 @@ class GoodbyeModule extends BaseModule {
     }
 
     if (action === 'edit') {
-      sessionService.setSession(chatId, userId, { module: 'goodbye', action: 'edit_message' }, 180);
+      sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'goodbye', action: 'edit_message' }, 180);
       await ctx.answerCbQuery();
       return ctx.reply(this.t(lang, 'goodbye.edit_prompt'));
     }
@@ -88,7 +88,7 @@ class GoodbyeModule extends BaseModule {
     }
 
     if (action === 'set_background') {
-      sessionService.setSession(chatId, userId, { module: 'goodbye', action: 'edit_background' }, 180);
+      sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'goodbye', action: 'edit_background' }, 180);
       await ctx.answerCbQuery();
       return ctx.reply(this.t(lang, 'goodbye.bg_prompt'), { parse_mode: 'HTML' });
     }

@@ -30,7 +30,7 @@ class RegulationModule extends BaseModule {
   }
 
   async handleCallback(ctx, action, _params) {
-    const chatId = String(ctx.chat.id);
+    const chatId = String(ctx.targetChatId || ctx.chat.id);
     const userId = String(ctx.from.id);
     const settings = db.getGroupSettings(chatId);
     const reg = { ...settings.regulation };
@@ -44,7 +44,7 @@ class RegulationModule extends BaseModule {
     }
 
     if (action === 'edit') {
-      sessionService.setSession(chatId, userId, { module: 'regulation', action: 'edit_rules' }, 180);
+      sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'regulation', action: 'edit_rules' }, 180);
       await ctx.answerCbQuery();
       return ctx.reply(this.t(lang, 'regulation.edit_prompt'));
     }

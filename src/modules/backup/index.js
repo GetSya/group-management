@@ -103,7 +103,7 @@ class BackupModule extends BaseModule {
   }
 
   async handleCallback(ctx, action, params) {
-    const chatId = String(ctx.chat.id);
+    const chatId = String(ctx.targetChatId || ctx.chat.id);
     const userId = String(ctx.from.id);
 
     // admin check (backup is sensitive -> require admin)
@@ -127,13 +127,13 @@ class BackupModule extends BaseModule {
     }
 
     if (action === 'set_interval') {
-      sessionService.setSession(chatId, userId, { module: 'backup', action: 'set_interval' }, 120);
+      sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'backup', action: 'set_interval' }, 120);
       await ctx.answerCbQuery();
       return ctx.reply('⏰ <b>Atur Interval Auto Backup</b>\n\nKirim angka 1-168 (jam). Contoh: <code>1</code> = setiap jam, <code>6</code> = setiap 6 jam, <code>24</code> = harian.\nKirim /cancel untuk batal.', { parse_mode: 'HTML' });
     }
 
     if (action === 'set_target') {
-      sessionService.setSession(chatId, userId, { module: 'backup', action: 'set_target' }, 120);
+      sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'backup', action: 'set_target' }, 120);
       await ctx.answerCbQuery();
       return ctx.reply('📤 <b>Atur Target Pengiriman Backup</b>\n\nKirim username atau ID tujuan:\n• <code>@username</code> (user harus sudah /start bot di private chat)\n• <code>123456789</code> (user ID / chat ID)\n• Kirim <code>-</code> untuk hapus target\n\nContoh: <code>@xiamostore</code> atau <code>1669925773</code>\nKirim /cancel untuk batal.', { parse_mode: 'HTML' });
     }
@@ -185,7 +185,7 @@ class BackupModule extends BaseModule {
     }
 
     if (action === 'import_prompt') {
-      sessionService.setSession(chatId, userId, { module: 'backup', action: 'await_restore_file' }, 180);
+      sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'backup', action: 'await_restore_file' }, 180);
       await ctx.answerCbQuery();
       return ctx.reply('📤 <b>Import / Restore dari File</b>\n\nKirim file <code>.json</code> backup sebagai <b>Document</b> (bukan text).\nBot akan validasi dan restore (backup saat ini akan diamankan dulu).\n\nKirim /cancel untuk batal.', { parse_mode: 'HTML' });
     }

@@ -12,10 +12,14 @@ async function helpCommand(ctx) {
 • <code>/tagadmins [message]</code> - Mention all group administrators
 • <code>/backup [create|list|info|send|export]</code> - Create & manage db.json backups
 • <code>/restore [filename]</code> - Restore db.json (or reply to a .json file)
+• <code>/close</code> / <code>/tutup</code> - Tutup grup (hanya admin bisa chat)
+• <code>/open</code> / <code>/buka</code> - Buka grup kembali
+• <code>/lockstatus</code> - Cek apakah grup sedang tutup/buka
 
 <b>General Commands:</b>
 • <code>/rules</code> - View current group regulations
 • <code>/admin [reason]</code> - Alert group admins about an issue
+• <code>/info [reply|@user|id]</code> - Lihat informasi pengguna
 • <code>/help</code> - Show this command list`;
 
   return ctx.reply(text, { parse_mode: 'HTML' });

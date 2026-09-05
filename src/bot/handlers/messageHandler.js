@@ -31,6 +31,17 @@ async function messageHandler(ctx) {
       return ctx.reply('❌ Action cancelled.');
     }
 
+    // Grup target efektif: dukung input via private chat (session.targetChatId)
+    const sessionTargetId = session.targetChatId ? String(session.targetChatId) : chatId;
+    if (session.targetChatId && String(session.targetChatId) !== chatId) {
+      const { isAdmin: checkAdmin } = require('../../utils/permissionUtils');
+      const allowed = await checkAdmin(ctx.telegram, sessionTargetId, userId);
+      if (!allowed) {
+        sessionService.clearSession(chatId, userId);
+        return ctx.reply('❌ Kamu bukan lagi admin grup target. Sesi dibatalkan.');
+      }
+    }
+
     // --- Backup sessions (handle both text and document) ---
     if (session.module === 'backup') {
       const backupService = require('../../database/backup');
@@ -118,7 +129,7 @@ async function messageHandler(ctx) {
       session.action === 'edit_background'
     ) {
       const modKey = session.module;
-      const groupSettings = db.getGroupSettings(chatId);
+      const groupSettings = db.getGroupSettings(sessionTargetId);
       const lang = groupSettings.language || 'en';
 
       const photoArr = ctx.message.photo;
@@ -134,7 +145,7 @@ async function messageHandler(ctx) {
           backgroundFileId: fileId,
           backgroundUrl: null,
         };
-        await db.set('settings', chatId, groupSettings, true);
+        await db.set('settings', sessionTargetId, groupSettings, true);
         sessionService.clearSession(chatId, userId);
         return ctx.reply(i18n.t(lang, `${modKey}.bg_set_photo`), { parse_mode: 'HTML' });
       }
@@ -147,7 +158,7 @@ async function messageHandler(ctx) {
             backgroundFileId: null,
             backgroundUrl: null,
           };
-          await db.set('settings', chatId, groupSettings, true);
+          await db.set('settings', sessionTargetId, groupSettings, true);
           sessionService.clearSession(chatId, userId);
           return ctx.reply(i18n.t(lang, `${modKey}.bg_reset`), { parse_mode: 'HTML' });
         }
@@ -157,7 +168,7 @@ async function messageHandler(ctx) {
             backgroundFileId: null,
             backgroundUrl: raw,
           };
-          await db.set('settings', chatId, groupSettings, true);
+          await db.set('settings', sessionTargetId, groupSettings, true);
           sessionService.clearSession(chatId, userId);
           return ctx.reply(i18n.t(lang, `${modKey}.bg_set_url`), { parse_mode: 'HTML' });
         }
@@ -170,7 +181,7 @@ async function messageHandler(ctx) {
     // Only proceed to text-based sessions if text exists
     if (!text) return;
 
-    const settings = db.getGroupSettings(chatId);
+    const settings = db.getGroupSettings(sessionTargetId);
     const lang = settings.language || 'en';
 
     // Regulation edit
@@ -179,7 +190,7 @@ async function messageHandler(ctx) {
         ...settings.regulation,
         rules: text,
       };
-      await db.set('settings', chatId, settings, true);
+      await db.set('settings', sessionTargetId, settings, true);
       sessionService.clearSession(chatId, userId);
       return ctx.reply(i18n.t(lang, 'regulation.updated'));
     }
@@ -190,7 +201,7 @@ async function messageHandler(ctx) {
         ...settings.welcome,
         message: text,
       };
-      await db.set('settings', chatId, settings, true);
+      await db.set('settings', sessionTargetId, settings, true);
       sessionService.clearSession(chatId, userId);
       return ctx.reply('✅ Welcome message updated successfully.');
     }
@@ -201,7 +212,7 @@ async function messageHandler(ctx) {
         ...settings.goodbye,
         message: text,
       };
-      await db.set('settings', chatId, settings, true);
+      await db.set('settings', sessionTargetId, settings, true);
       sessionService.clearSession(chatId, userId);
       return ctx.reply('✅ Goodbye message updated successfully.');
     }
@@ -215,7 +226,7 @@ async function messageHandler(ctx) {
         }
 
         // Check duplicate
-        const existing = customCommandRepo.findByName(chatId, validation.cleanName);
+        const existing = customCommandRepo.findByName(sessionTargetId, validation.cleanName);
         if (existing) {
           return ctx.reply(`❌ Command /${validation.cleanName} already exists in this group.\nPlease send another name or send /cancel.`);
         }
@@ -225,6 +236,7 @@ async function messageHandler(ctx) {
           userId,
           {
             module: 'customCommands',
+            targetChatId: sessionTargetId,
             action: 'add_response',
             commandName: validation.cleanName,
           },
@@ -243,7 +255,7 @@ async function messageHandler(ctx) {
           return ctx.reply(`❌ ${validation.error}`);
         }
 
-        const newCmd = customCommandRepo.create(chatId, {
+        const newCmd = customCommandRepo.create(sessionTargetId, {
           name: session.commandName,
           response: validation.cleanResponse,
           createdBy: userId,
@@ -268,6 +280,7 @@ async function messageHandler(ctx) {
           userId,
           {
             module: 'customCommands',
+            targetChatId: sessionTargetId,
             action: 'add_button_target',
             commandName: session.commandName,
             buttonText: validation.cleanText,
@@ -290,14 +303,14 @@ async function messageHandler(ctx) {
           if (!urlValidation.valid) {
             return ctx.reply(`❌ ${urlValidation.error}`);
           }
-          customCommandRepo.addButton(chatId, cmdName, {
+          customCommandRepo.addButton(sessionTargetId, cmdName, {
             text: buttonText,
             type: 'url',
             url: urlValidation.cleanUrl,
           });
         } else if (text.toLowerCase().startsWith('text:')) {
           const directResponse = text.slice(5).trim();
-          customCommandRepo.addButton(chatId, cmdName, {
+          customCommandRepo.addButton(sessionTargetId, cmdName, {
             text: buttonText,
             type: 'response',
             response: directResponse,
@@ -305,7 +318,7 @@ async function messageHandler(ctx) {
         } else {
           // Target command
           const targetCmd = text.replace(/^\//, '').trim().toLowerCase();
-          customCommandRepo.addButton(chatId, cmdName, {
+          customCommandRepo.addButton(sessionTargetId, cmdName, {
             text: buttonText,
             type: 'command',
             action: { command: targetCmd },
@@ -326,7 +339,7 @@ async function messageHandler(ctx) {
         }
 
         const cmdName = session.commandName;
-        customCommandRepo.update(chatId, cmdName, { response: validation.cleanResponse });
+        customCommandRepo.update(sessionTargetId, cmdName, { response: validation.cleanResponse });
         sessionService.clearSession(chatId, userId);
 
         return ctx.reply(

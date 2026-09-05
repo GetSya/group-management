@@ -57,6 +57,16 @@ function getSettingsKeyboard(lang = 'id', page = 1) {
       Markup.button.callback(i18n.t(lang, 'settings.tag'), 'settings:tag'),
       Markup.button.callback(i18n.t(lang, 'settings.link'), 'settings:link'),
     ],
+    // Row 5 — pindahan dari bottom layout agar Hal 1 ramping
+    [
+      Markup.button.callback(i18n.t(lang, 'settings.guardian'), 'settings:guardian'),
+      Markup.button.callback(i18n.t(lang, 'settings.approval'), 'settings:approval'),
+    ],
+    // Row 6 — pindahan dari bottom layout
+    [
+      Markup.button.callback(i18n.t(lang, 'settings.deleting'), 'settings:deletingMessages'),
+      Markup.button.callback(i18n.t(lang, 'settings.grouplock'), 'settings:groupLock'),
+    ],
     // Page Switcher
     [
       Markup.button.callback('⏪ Menu Utama (Hal 1/2) ⬅️', 'settings:page:1'),
@@ -65,20 +75,9 @@ function getSettingsKeyboard(lang = 'id', page = 1) {
 
   const currentGrid = isPage1 ? page1Grid : page2Grid;
 
-  // Fixed Bottom Layout
+  // Fixed Bottom Layout — ramping: hanya Bahasa & Tutup + Lainnya.
+  // Guardian / Approval / Penghapusan Pesan / Buka-Tutup kini ada di Hal 2/2.
   const bottomLayout = [
-    // Full width: Guardian Bot
-    [
-      Markup.button.callback(i18n.t(lang, 'settings.guardian'), 'settings:guardian'),
-    ],
-    // Full width: Mode Persetujuan
-    [
-      Markup.button.callback(i18n.t(lang, 'settings.approval'), 'settings:approval'),
-    ],
-    // Full width: Penghapusan Pesan
-    [
-      Markup.button.callback(i18n.t(lang, 'settings.deleting'), 'settings:deletingMessages'),
-    ],
     // 2 columns: Bahasa & Tutup
     [
       Markup.button.callback(i18n.t(lang, 'settings.lang'), 'settings:lang'),

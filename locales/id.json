@@ -39,6 +39,7 @@
     "guardian": "👮 Guardian Bot",
     "approval": "📚 Mode Persetujuan",
     "deleting": "🗑 Penghapusan Pesan",
+    "grouplock": "🔒 Buka/Tutup",
     "lang": "🇮🇩 Bahasa",
     "other": "▶️ Lainnya"
   },
@@ -157,6 +158,19 @@
   "night": {
     "title": "🌙 <b>MODE MALAM</b>\n\nStatus: {status}\nJam Tenang: <b>{start} - {end}</b>\nZona Waktu: <b>{timezone}</b>\nTindakan: {action}\nAdmin Bebas: {adminBypass}",
     "toggle_btn": "🔄 Ganti Status"
+  },
+  "grouplock": {
+    "title": "🔒 <b>BUKA / TUTUP GRUP</b>\n\nStatus: {status}\nDitutup pada: {closedAt}\nDitutup oleh: {closedBy}\n\nTutup = hanya admin yang bisa kirim pesan.\nBuka = semua anggota bisa kirim pesan lagi.",
+    "opened": "TERBUKA",
+    "closed": "TERTUTUP",
+    "open_btn": "🔓 Buka Grup",
+    "close_btn": "🔒 Tutup Grup",
+    "status_btn": "📊 Cek Status",
+    "closed_msg": "🔒 <b>Grup ditutup.</b>\nHanya admin yang dapat mengirim pesan.",
+    "opened_msg": "🔓 <b>Grup dibuka.</b>\nSemua anggota dapat mengirim pesan kembali.",
+    "status_closed": "🔒 Grup saat ini TERTUTUP",
+    "status_open": "🔓 Grup saat ini TERBUKA",
+    "need_admin": "⚠️ Bot harus menjadi admin dengan izin <i>Restrict Members</i> untuk menutup/membuka grup."
   },
   "tag": {
     "title": "🔔 <b>TAG & MENTION</b>\n\nStatus: {status}\nIzinkan /tagadmins: {allowTagAdmins}\nCooldown: {cooldown}d",

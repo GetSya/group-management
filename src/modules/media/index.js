@@ -21,7 +21,7 @@ class MediaModule extends BaseModule {
   }
 
   async handleCallback(ctx, action, params) {
-    const chatId = String(ctx.chat.id);
+    const chatId = String(ctx.targetChatId || ctx.chat.id);
     const groupSettings = db.getGroupSettings(chatId);
     const media = { ...groupSettings.media };
     const lang = groupSettings.language || 'en';

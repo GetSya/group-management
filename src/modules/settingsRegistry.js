@@ -18,6 +18,7 @@ const guardianModule = require('./guardian');
 const approvalModule = require('./approval');
 const deletingMessagesModule = require('./deletingMessages');
 const antiDeleteModule = require('./antiDelete');
+const groupLockModule = require('./groupLock');
 const langModule = require('./lang');
 const otherModule = require('./other');
 const customCommandsModule = require('./customCommands');
@@ -62,6 +63,7 @@ class SettingsRegistry {
     this.register(approvalModule);
     this.register(deletingMessagesModule);
     this.register(antiDeleteModule);
+    this.register(groupLockModule);
     this.register(langModule);
     this.register(otherModule);
     this.register(customCommandsModule);

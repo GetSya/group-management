@@ -128,6 +128,13 @@ const getDefaultGroupSettings = (chatId, title = 'Group') => ({
     deleteBot: false,
     timer: 30,
   },
+  groupLock: {
+    isClosed: false,
+    closedAt: null,
+    closedBy: null,
+    openedAt: null,
+    openedBy: null,
+  },
 });
 
 const DatabaseSchema = z.object({

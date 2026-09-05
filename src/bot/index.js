@@ -18,7 +18,9 @@ const { warnsCommand, resetWarnsCommand } = require('./commands/warns');
 const { blockCommand, blockWordCommand, blockDomainCommand } = require('./commands/block');
 const adminAlertCommand = require('./commands/admin');
 const tagAdminsCommand = require('./commands/tagadmins');
+const infoCommand = require('./commands/info');
 const { backupCommand, restoreCommand } = require('./commands/backup');
+const { closeCommand, openCommand, lockStatusCommand } = require('./commands/grouplock');
 
 // Handlers & Callbacks
 const callbackRouter = require('./callbacks/callbackRouter');
@@ -43,9 +45,12 @@ function createBot() {
   bot.command('help', helpCommand);
   bot.command('rules', rulesCommand);
   bot.command('admin', adminAlertCommand);
+  bot.command(['info', 'profil', 'profile', 'whois'], infoCommand);
 
   // Admin Commands (protected by requireAdmin middleware)
-  bot.command('settings', requireAdmin, settingsCommand);
+  // /settings sengaja TANPA requireAdmin: di grup dicek admin di dalam command,
+  // di private dicek admin terhadap grup target yang dipilih.
+  bot.command('settings', settingsCommand);
   bot.command('warn', requireAdmin, warnCommand);
   bot.command('warns', warnsCommand);
   bot.command('resetwarns', requireAdmin, resetWarnsCommand);
@@ -55,6 +60,11 @@ function createBot() {
   bot.command('tagadmins', tagAdminsCommand);
   bot.command('backup', requireAdmin, backupCommand);
   bot.command('restore', requireAdmin, restoreCommand);
+  // Buka/tutup/cek grup — dukung grup + private (private pakai grup terpilih via /settings).
+  // Cek admin dilakukan di dalam command terhadap grup target.
+  bot.command(['close', 'tutup', 'lock'], closeCommand);
+  bot.command(['open', 'buka', 'unlock'], openCommand);
+  bot.command(['lockstatus', 'cekstatus', 'statusgrup'], lockStatusCommand);
 
   // Callback Query Central Router
   bot.on('callback_query', callbackRouter);

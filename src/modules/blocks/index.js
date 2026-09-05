@@ -28,7 +28,7 @@ class BlocksModule extends BaseModule {
   }
 
   async handleCallback(ctx, action, _params) {
-    const chatId = String(ctx.chat.id);
+    const chatId = String(ctx.targetChatId || ctx.chat.id);
     if (action === 'clear') {
       const blocks = db.get('blocks') || [];
       const remaining = blocks.filter(b => b.chatId !== chatId);

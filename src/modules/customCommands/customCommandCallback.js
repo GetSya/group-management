@@ -7,7 +7,7 @@ const sessionService = require('../../services/sessionService');
 const logger = require('../../config/logger');
 
 async function handleCustomCommandCallback(ctx, action, params) {
-  const chatId = String(ctx.chat.id);
+  const chatId = String(ctx.targetChatId || ctx.chat.id);
   const userId = String(ctx.from.id);
 
   // 1. User Button Click Action (`customcmd:button:btnId`)
@@ -63,7 +63,7 @@ async function handleCustomCommandCallback(ctx, action, params) {
   }
 
   if (action === 'add') {
-    sessionService.setSession(chatId, userId, { module: 'customCommands', action: 'add_name' }, 180);
+    sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'customCommands', action: 'add_name' }, 180);
     await ctx.answerCbQuery();
     return ctx.reply('📝 Please send the command name (e.g. <code>rules</code> or <code>/info</code>):\nSend /cancel to abort.', { parse_mode: 'HTML' });
   }
@@ -125,7 +125,7 @@ async function handleCustomCommandCallback(ctx, action, params) {
     const cmd = customCommandRepo.findByName(chatId, cmdName);
     if (!cmd) return ctx.answerCbQuery('Command not found.');
 
-    sessionService.setSession(chatId, userId, { module: 'customCommands', action: 'edit_response', commandName: cmdName }, 300);
+    sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'customCommands', action: 'edit_response', commandName: cmdName }, 300);
     await ctx.answerCbQuery();
     // Code-point aware slice to avoid lone surrogates in preview
     const respPoints = Array.from(cmd.response);
@@ -136,7 +136,7 @@ async function handleCustomCommandCallback(ctx, action, params) {
 
   if (action === 'btn_add') {
     const cmdName = params[0];
-    sessionService.setSession(chatId, userId, { module: 'customCommands', action: 'add_button_text', commandName: cmdName }, 180);
+    sessionService.setSession(String(ctx.chat.id), userId, { targetChatId: chatId, module: 'customCommands', action: 'add_button_text', commandName: cmdName }, 180);
     await ctx.answerCbQuery();
     return ctx.reply(`➕ <b>Add Button to /${cmdName}</b>\n\nPlease send the button label text (e.g. <code>🌐 Website</code> or <code>📜 Rules</code>):`, { parse_mode: 'HTML' });
   }

@@ -35,7 +35,7 @@ class LangModule extends BaseModule {
   }
 
   async handleCallback(ctx, action, params) {
-    const chatId = String(ctx.chat.id);
+    const chatId = String(ctx.targetChatId || ctx.chat.id);
     if (action === 'set') {
       const selectedLang = params[0] || 'id';
       const settings = db.getGroupSettings(chatId);
