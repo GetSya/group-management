@@ -13,11 +13,20 @@ class WelcomeModule extends BaseModule {
     const welcome = settings.welcome || {};
     const lang = settings.language || 'en';
 
-    const text = this.t(lang, 'welcome.title', {
-      status: welcome.enabled ? '✅ ' + this.t(lang, 'common.enabled') : '❌ ' + this.t(lang, 'common.disabled'),
-      deleteAfter: welcome.deleteAfter || 0,
-      message: welcome.message || '👋 Welcome @mention!',
-    });
+    const cardStatus = welcome.cardEnabled ? '✅ ON' : '❌ OFF';
+    const bgSource = welcome.backgroundUrl
+      ? `🌐 URL`
+      : welcome.backgroundFileId
+        ? `📤 ${this.t(lang, 'welcome.bg_custom')}`
+        : `🤖 ${this.t(lang, 'welcome.bg_default')}`;
+
+    const text =
+      this.t(lang, 'welcome.title', {
+        status: welcome.enabled ? '✅ ' + this.t(lang, 'common.enabled') : '❌ ' + this.t(lang, 'common.disabled'),
+        deleteAfter: welcome.deleteAfter || 0,
+        message: welcome.message || '👋 Welcome @mention!',
+      }) +
+      `\n\n🖼 <b>${this.t(lang, 'welcome.card_title')}</b>: ${cardStatus}\n🎨 <b>Background</b>: ${bgSource}`;
 
     const keyboard = Markup.inlineKeyboard([
       [
@@ -26,6 +35,13 @@ class WelcomeModule extends BaseModule {
       ],
       [
         Markup.button.callback(`⏱ Delete After: ${welcome.deleteAfter || 0}s`, 'welcome:timer'),
+      ],
+      [
+        Markup.button.callback(`🖼 Card: ${welcome.cardEnabled ? 'ON' : 'OFF'}`, 'welcome:card_toggle'),
+        Markup.button.callback(this.t(lang, 'welcome.preview_btn'), 'welcome:preview'),
+      ],
+      [
+        Markup.button.callback(this.t(lang, 'welcome.bg_btn'), 'welcome:set_background'),
       ],
       [Markup.button.callback(this.t(lang, 'common.back'), 'settings:back')],
     ]);
@@ -60,6 +76,36 @@ class WelcomeModule extends BaseModule {
       await this.updateSettings(chatId, welcome);
       await ctx.answerCbQuery(`Delete timer: ${welcome.deleteAfter}s`);
       return this.render(ctx, chatId);
+    }
+
+    if (action === 'card_toggle') {
+      welcome.cardEnabled = !welcome.cardEnabled;
+      await this.updateSettings(chatId, welcome);
+      await ctx.answerCbQuery(
+        welcome.cardEnabled ? this.t(lang, 'welcome.card_on') : this.t(lang, 'welcome.card_off')
+      );
+      return this.render(ctx, chatId);
+    }
+
+    if (action === 'set_background') {
+      sessionService.setSession(chatId, userId, { module: 'welcome', action: 'edit_background' }, 180);
+      await ctx.answerCbQuery();
+      return ctx.reply(this.t(lang, 'welcome.bg_prompt'), { parse_mode: 'HTML' });
+    }
+
+    if (action === 'preview') {
+      await ctx.answerCbQuery(this.t(lang, 'welcome.preview_wait'));
+      const cardService = require('../../services/welcomeCardService');
+      const sent = await cardService.sendCardMessage(ctx.telegram, chatId, 'welcome', {
+        member: ctx.from,
+        groupTitle: ctx.chat.title || 'Group',
+        caption: this.t(lang, 'welcome.preview_caption'),
+        cardCfg: welcome,
+      });
+      if (!sent) {
+        return ctx.reply(this.t(lang, 'welcome.preview_fail'));
+      }
+      return;
     }
 
     return this.render(ctx, chatId);

@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "node --watch src/app.js",
-    "test": "node --test tests/mediaDetector.test.js tests/linkDetector.test.js tests/alphabetDetector.test.js tests/callbackParser.test.js tests/database.test.js tests/customCommands.test.js tests/backup.test.js tests/jsonVaultClient.test.js",
+    "test": "node --test tests/mediaDetector.test.js tests/linkDetector.test.js tests/alphabetDetector.test.js tests/callbackParser.test.js tests/database.test.js tests/customCommands.test.js tests/backup.test.js tests/jsonVaultClient.test.js tests/welcomeCard.test.js",
     "format": "prettier --write \"src/**/*.js\" \"locales/*.json\""
   },
   "keywords": [

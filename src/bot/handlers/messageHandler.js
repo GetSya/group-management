@@ -112,6 +112,61 @@ async function messageHandler(ctx) {
       }
     }
 
+    // --- Welcome / Goodbye custom background (photo, URL, atau reset) ---
+    if (
+      (session.module === 'welcome' || session.module === 'goodbye') &&
+      session.action === 'edit_background'
+    ) {
+      const modKey = session.module;
+      const groupSettings = db.getGroupSettings(chatId);
+      const lang = groupSettings.language || 'en';
+
+      const photoArr = ctx.message.photo;
+      if (photoArr && photoArr.length > 0) {
+        const fileId = photoArr[photoArr.length - 1].file_id;
+        try {
+          await ctx.telegram.getFileLink(fileId); // validasi file bisa diakses
+        } catch {
+          return ctx.reply(i18n.t(lang, `${modKey}.bg_invalid`));
+        }
+        groupSettings[modKey] = {
+          ...groupSettings[modKey],
+          backgroundFileId: fileId,
+          backgroundUrl: null,
+        };
+        await db.set('settings', chatId, groupSettings, true);
+        sessionService.clearSession(chatId, userId);
+        return ctx.reply(i18n.t(lang, `${modKey}.bg_set_photo`), { parse_mode: 'HTML' });
+      }
+
+      if (text) {
+        const raw = text.trim();
+        if (raw === '-' || raw.toLowerCase() === 'default' || raw.toLowerCase() === 'reset') {
+          groupSettings[modKey] = {
+            ...groupSettings[modKey],
+            backgroundFileId: null,
+            backgroundUrl: null,
+          };
+          await db.set('settings', chatId, groupSettings, true);
+          sessionService.clearSession(chatId, userId);
+          return ctx.reply(i18n.t(lang, `${modKey}.bg_reset`), { parse_mode: 'HTML' });
+        }
+        if (/^https?:\/\/.+\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(raw)) {
+          groupSettings[modKey] = {
+            ...groupSettings[modKey],
+            backgroundFileId: null,
+            backgroundUrl: raw,
+          };
+          await db.set('settings', chatId, groupSettings, true);
+          sessionService.clearSession(chatId, userId);
+          return ctx.reply(i18n.t(lang, `${modKey}.bg_set_url`), { parse_mode: 'HTML' });
+        }
+        return ctx.reply(i18n.t(lang, `${modKey}.bg_invalid`), { parse_mode: 'HTML' });
+      }
+
+      return ctx.reply(i18n.t(lang, `${modKey}.bg_prompt`), { parse_mode: 'HTML' });
+    }
+
     // Only proceed to text-based sessions if text exists
     if (!text) return;
 

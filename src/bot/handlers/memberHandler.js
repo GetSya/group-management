@@ -4,6 +4,7 @@ const i18n = require('../../services/i18nService');
 const actionService = require('../../services/actionService');
 const moderationService = require('../../services/moderationService');
 const { getUserMention, interpolate, getFormattedDate } = require('../../utils/messageUtils');
+const cardService = require('../../services/welcomeCardService');
 const logger = require('../../config/logger');
 
 async function handleNewChatMembers(ctx) {
@@ -124,9 +125,22 @@ async function handleNewChatMembers(ctx) {
       });
 
       try {
-        const sentMsg = await ctx.reply(welcomeText, { parse_mode: 'HTML' });
+        let sentMsg = null;
 
-        if (welcome.deleteAfter && welcome.deleteAfter > 0) {
+        // Kartu gambar (opsional) — fallback otomatis ke teks bila gagal
+        if (welcome.cardEnabled) {
+          sentMsg = await cardService.sendCardMessage(ctx.telegram, chatId, 'welcome', {
+            member,
+            groupTitle: ctx.chat.title || 'Group',
+            caption: welcomeText,
+            cardCfg: welcome,
+          });
+        }
+        if (!sentMsg) {
+          sentMsg = await ctx.reply(welcomeText, { parse_mode: 'HTML' });
+        }
+
+        if (sentMsg && welcome.deleteAfter && welcome.deleteAfter > 0) {
           setTimeout(() => {
             actionService.deleteMessage(ctx.telegram, chatId, sentMsg.message_id);
           }, welcome.deleteAfter * 1000);
@@ -170,8 +184,21 @@ async function handleLeftChatMember(ctx) {
     });
 
     try {
-      const sentMsg = await ctx.reply(goodbyeText, { parse_mode: 'HTML' });
-      if (goodbye.deleteAfter && goodbye.deleteAfter > 0) {
+      let sentMsg = null;
+
+      // Kartu gambar (opsional) — fallback otomatis ke teks bila gagal
+      if (goodbye.cardEnabled) {
+        sentMsg = await cardService.sendCardMessage(ctx.telegram, chatId, 'goodbye', {
+          member: leftMember,
+          groupTitle: ctx.chat.title || 'Group',
+          caption: goodbyeText,
+          cardCfg: goodbye,
+        });
+      }
+      if (!sentMsg) {
+        sentMsg = await ctx.reply(goodbyeText, { parse_mode: 'HTML' });
+      }
+      if (sentMsg && goodbye.deleteAfter && goodbye.deleteAfter > 0) {
         setTimeout(() => {
           actionService.deleteMessage(ctx.telegram, chatId, sentMsg.message_id);
         }, goodbye.deleteAfter * 1000);

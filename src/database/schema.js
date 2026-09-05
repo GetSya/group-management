@@ -44,11 +44,17 @@ const getDefaultGroupSettings = (chatId, title = 'Group') => ({
     enabled: true,
     message: '👋 Welcome {mention} to {group}!\nPlease read and follow the group rules.',
     deleteAfter: 0,
+    cardEnabled: false,
+    backgroundFileId: null,
+    backgroundUrl: null,
   },
   goodbye: {
     enabled: false,
     message: '👋 Goodbye {user}!',
     deleteAfter: 60,
+    cardEnabled: false,
+    backgroundFileId: null,
+    backgroundUrl: null,
   },
   alphabets: {
     enabled: false,
