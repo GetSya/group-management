@@ -12,9 +12,13 @@ async function helpCommand(ctx) {
 • <code>/tagadmins [message]</code> - Mention all group administrators
 • <code>/backup [create|list|info|send|export]</code> - Create & manage db.json backups
 • <code>/restore [filename]</code> - Restore db.json (or reply to a .json file)
-• <code>/close</code> / <code>/tutup</code> - Tutup grup (hanya admin bisa chat)
-• <code>/open</code> / <code>/buka</code> - Buka grup kembali
-• <code>/lockstatus</code> - Cek apakah grup sedang tutup/buka
+ • <code>/close</code> / <code>/tutup</code> - Tutup grup (hanya admin bisa chat)
+ • <code>/open</code> / <code>/buka</code> - Buka grup kembali
+ • <code>/lockstatus</code> - Cek apakah grup sedang tutup/buka
+ • <code>/kick [reply|@user|id] [alasan]</code> - Kick member (bisa join lagi via link)
+ • <code>/add [reply|@user|id]</code> - Unban + kirim link undangan (Bot API tidak bisa add paksa)
+ • <code>/promote [reply|@user] [title]</code> - Angkat member jadi admin
+ • <code>/demote [reply|@user]</code> - Turunkan admin jadi member
 
 <b>General Commands:</b>
 • <code>/rules</code> - View current group regulations

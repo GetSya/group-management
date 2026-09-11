@@ -96,9 +96,13 @@ class WelcomeModule extends BaseModule {
     if (action === 'preview') {
       await ctx.answerCbQuery(this.t(lang, 'welcome.preview_wait'));
       const cardService = require('../../services/welcomeCardService');
-      const sent = await cardService.sendCardMessage(ctx.telegram, chatId, 'welcome', {
+      // Preview dikirim ke chat saat ini (bukan ke grup target) agar tidak spam grup
+      // saat pengaturan dibuka via private chat.
+      const previewDest = String(ctx.chat.id);
+      const groupTitle = (db.data.groups || {})[chatId]?.title || ctx.chat.title || 'Group';
+      const sent = await cardService.sendCardMessage(ctx.telegram, previewDest, 'welcome', {
         member: ctx.from,
-        groupTitle: ctx.chat.title || 'Group',
+        groupTitle,
         caption: this.t(lang, 'welcome.preview_caption'),
         cardCfg: welcome,
       });

@@ -96,9 +96,11 @@ class GoodbyeModule extends BaseModule {
     if (action === 'preview') {
       await ctx.answerCbQuery(this.t(lang, 'goodbye.preview_wait'));
       const cardService = require('../../services/welcomeCardService');
-      const sent = await cardService.sendCardMessage(ctx.telegram, chatId, 'goodbye', {
+      const previewDest = String(ctx.chat.id);
+      const groupTitle = (db.data.groups || {})[chatId]?.title || ctx.chat.title || 'Group';
+      const sent = await cardService.sendCardMessage(ctx.telegram, previewDest, 'goodbye', {
         member: ctx.from,
-        groupTitle: ctx.chat.title || 'Group',
+        groupTitle,
         caption: this.t(lang, 'goodbye.preview_caption'),
         cardCfg: goodbye,
       });

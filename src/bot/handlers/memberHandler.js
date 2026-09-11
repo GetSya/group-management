@@ -3,9 +3,49 @@ const db = require('../../database/database');
 const i18n = require('../../services/i18nService');
 const actionService = require('../../services/actionService');
 const moderationService = require('../../services/moderationService');
-const { getUserMention, interpolate, getFormattedDate } = require('../../utils/messageUtils');
+const { getUserMention, interpolate, getFormattedDate, escapeHtml } = require('../../utils/messageUtils');
 const cardService = require('../../services/welcomeCardService');
 const logger = require('../../config/logger');
+
+/**
+ * Bangun teks welcome/goodbye dengan aman untuk parse_mode HTML.
+ * `mention` sengaja HTML (<a href>), semua variabel lain di-escape
+ * agar nama user / judul grup dengan karakter &, <, > tidak membuat
+ * Telegram menolak pesan ("can't parse entities") di sebagian grup saja.
+ */
+function buildGreetingText(template, member, groupTitle) {
+  const mention = getUserMention(member, true);
+  const fullName = escapeHtml([member.first_name, member.last_name].filter(Boolean).join(' ') || 'Member');
+  const firstName = escapeHtml(member.first_name || 'Member');
+  const lastName = escapeHtml(member.last_name || '');
+  const username = member.username ? `@${escapeHtml(member.username)}` : firstName;
+  const safeGroup = escapeHtml(groupTitle || 'Group');
+  const date = escapeHtml(getFormattedDate());
+  return interpolate(template, {
+    mention,
+    name: fullName,
+    user: firstName,
+    username,
+    first_name: firstName,
+    last_name: lastName,
+    group: safeGroup,
+    date,
+  });
+}
+
+/** Kirim teks: coba HTML dulu, fallback teks polos bila template admin rusak. */
+async function safeReplyText(ctx, text) {
+  try {
+    return await ctx.reply(text, { parse_mode: 'HTML' });
+  } catch (err) {
+    const msg = (err?.message || '').toLowerCase();
+    if (msg.includes("can't parse entities") || msg.includes('wrong html') || msg.includes("can't parse")) {
+      logger.debug({ error: err.message }, 'Greeting HTML ditolak, fallback teks polos');
+      return ctx.reply(String(text || '').replace(/<[^>]*>/g, ''));
+    }
+    throw err;
+  }
+}
 
 async function handleNewChatMembers(ctx) {
   const newMembers = ctx.message.new_chat_members;
@@ -109,20 +149,8 @@ async function handleNewChatMembers(ctx) {
     // 5. Welcome Message
     const welcome = groupSettings.welcome || {};
     if (welcome.enabled) {
-      const mention = getUserMention(member, true);
       const welcomeTemplate = welcome.message || '👋 Welcome @mention to @group!';
-
-      const fullName = [member.first_name, member.last_name].filter(Boolean).join(' ') || 'Member';
-      const welcomeText = interpolate(welcomeTemplate, {
-        mention,
-        name: fullName,
-        user: member.first_name || 'Member',
-        username: member.username ? `@${member.username}` : (member.first_name || 'Member'),
-        first_name: member.first_name || '',
-        last_name: member.last_name || '',
-        group: ctx.chat.title || 'Group',
-        date: getFormattedDate(),
-      });
+      const welcomeText = buildGreetingText(welcomeTemplate, member, ctx.chat.title);
 
       try {
         let sentMsg = null;
@@ -137,7 +165,7 @@ async function handleNewChatMembers(ctx) {
           });
         }
         if (!sentMsg) {
-          sentMsg = await ctx.reply(welcomeText, { parse_mode: 'HTML' });
+          sentMsg = await safeReplyText(ctx, welcomeText);
         }
 
         if (sentMsg && welcome.deleteAfter && welcome.deleteAfter > 0) {
@@ -168,20 +196,8 @@ async function handleLeftChatMember(ctx) {
   // 2. Goodbye Message
   const goodbye = groupSettings.goodbye || {};
   if (goodbye.enabled) {
-    const mention = getUserMention(leftMember, true);
     const goodbyeTemplate = goodbye.message || '👋 Goodbye @name!';
-
-    const fullName = [leftMember.first_name, leftMember.last_name].filter(Boolean).join(' ') || 'Member';
-    const goodbyeText = interpolate(goodbyeTemplate, {
-      mention,
-      name: fullName,
-      user: leftMember.first_name || 'Member',
-      username: leftMember.username ? `@${leftMember.username}` : (leftMember.first_name || 'Member'),
-      first_name: leftMember.first_name || '',
-      last_name: leftMember.last_name || '',
-      group: ctx.chat.title || 'Group',
-      date: getFormattedDate(),
-    });
+    const goodbyeText = buildGreetingText(goodbyeTemplate, leftMember, ctx.chat.title);
 
     try {
       let sentMsg = null;
@@ -196,7 +212,7 @@ async function handleLeftChatMember(ctx) {
         });
       }
       if (!sentMsg) {
-        sentMsg = await ctx.reply(goodbyeText, { parse_mode: 'HTML' });
+        sentMsg = await safeReplyText(ctx, goodbyeText);
       }
       if (sentMsg && goodbye.deleteAfter && goodbye.deleteAfter > 0) {
         setTimeout(() => {

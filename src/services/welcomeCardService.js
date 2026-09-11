@@ -3,7 +3,9 @@ const logger = require('../config/logger');
 
 const CARD_W = 1000;
 const CARD_H = 400;
-const FETCH_TIMEOUT_MS = 15000;
+const FETCH_TIMEOUT_MS = 8000;
+// Batas caption foto Telegram = 1024 karakter. Sisakan ruang agar tidak ditolak API.
+const CAPTION_LIMIT = 1024;
 const ACCENTS = {
   welcome: { main: '#22c55e', deep: '#15803d', soft: 'rgba(34,197,94,', label: 'WELCOME' },
   goodbye: { main: '#f87171', deep: '#b91c1c', soft: 'rgba(248,113,113,', label: 'GOODBYE' },
@@ -490,15 +492,25 @@ async function resolveMemberCount(telegram, chatId, fallback = '1') {
 /**
  * Render + kirim sambutan/perpisahan sebagai FOTO kartu + caption.
  * Return message Telegram bila sukses, null bila gagal (caller kirim teks polos).
+ *
+ * Robust terhadap kasus sporadis "ada grup yang bisa, ada yang error":
+ * - caption dibatasi 1024 char (limit Telegram untuk foto)
+ * - caption HTML invalid -> retry sebagai teks polos (tanpa parse_mode)
+ * - setiap fetch gambar terisolasi (satu gagal tidak menggagalkan lain)
+ * - buffer PNG dikirim dengan filename agar kompatibel di semua DC Bot API
  */
 async function sendCardMessage(telegram, chatId, type, { member, groupTitle, caption, cardCfg = {} }) {
+  const cid = String(chatId);
   try {
     const fullName = [member?.first_name, member?.last_name].filter(Boolean).join(' ') || 'Member';
+
+    // Isolasi: tiap resolve tidak boleh me-reject Promise.all.
+    const safe = p => Promise.resolve(p).catch(() => null);
     const [avatarBuf, guildIconBuf, backgroundBuf, memberCount] = await Promise.all([
-      member?.id ? resolveAvatarBuffer(telegram, member.id) : Promise.resolve(null),
-      resolveGuildIconBuffer(telegram, chatId),
-      resolveBackgroundBuffer(telegram, cardCfg),
-      resolveMemberCount(telegram, chatId),
+      safe(member?.id ? resolveAvatarBuffer(telegram, member.id) : Promise.resolve(null)),
+      safe(resolveGuildIconBuffer(telegram, cid)),
+      safe(resolveBackgroundBuffer(telegram, cardCfg)),
+      safe(resolveMemberCount(telegram, cid)),
     ]);
 
     const [avatarImg, guildIconImg, backgroundImg] = await Promise.all([
@@ -511,22 +523,60 @@ async function sendCardMessage(telegram, chatId, type, { member, groupTitle, cap
       type,
       username: fullName.slice(0, 32),
       groupName: String(groupTitle || 'Group').slice(0, 32),
-      memberCount,
+      memberCount: memberCount || '1',
       avatarImg,
       backgroundImg,
       guildIconImg,
     });
 
-    return await telegram.sendPhoto(chatId, { source: png }, { caption: caption || '', parse_mode: 'HTML' });
+    const safeCaption = truncateCaption(caption);
+    const photo = { source: png, filename: `${type}-card.png` };
+
+    // 1. Coba dengan HTML (mention <a href> tetap bisa diklik).
+    try {
+      return await telegram.sendPhoto(cid, photo, { caption: safeCaption, parse_mode: 'HTML' });
+    } catch (err) {
+      // Error parse HTML (template admin rusak / karakter khusus) -> retry teks polos.
+      if (isParseError(err)) {
+        logger.debug({ error: err.message, chatId: cid }, 'Caption HTML kartu ditolak, retry teks polos');
+        return await telegram.sendPhoto(cid, photo, { caption: stripHtml(safeCaption) });
+      }
+      throw err;
+    }
   } catch (err) {
-    logger.warn({ error: err.message, type }, 'Gagal render/kirim kartu, fallback ke teks');
+    logger.warn({ error: err.message, chatId: cid, type }, 'Gagal render/kirim kartu, fallback ke teks');
     return null;
   }
+}
+
+/** Potong caption ke limit Telegram tanpa memotong surrogate pair. */
+function truncateCaption(caption) {
+  const text = caption == null ? '' : String(caption);
+  const cp = Array.from(text);
+  if (cp.length <= CAPTION_LIMIT) return text;
+  return cp.slice(0, CAPTION_LIMIT - 1).join('') + '…';
+}
+
+/** Deteksi error parse entities Telegram. */
+function isParseError(err) {
+  const msg = (err?.message || '').toLowerCase();
+  return (
+    msg.includes("can't parse entities") ||
+    msg.includes('can\'t parse entities') ||
+    msg.includes('wrong html') ||
+    msg.includes('bad request: can\'t parse')
+  );
+}
+
+/** Strip tag HTML sederhana untuk fallback teks polos. */
+function stripHtml(text) {
+  return String(text || '').replace(/<[^>]*>/g, '');
 }
 
 module.exports = {
   CARD_W,
   CARD_H,
+  CAPTION_LIMIT,
   ordinal,
   renderCard,
   fetchBuffer,
@@ -536,4 +586,6 @@ module.exports = {
   resolveBackgroundBuffer,
   resolveMemberCount,
   sendCardMessage,
+  truncateCaption,
+  stripHtml,
 };
