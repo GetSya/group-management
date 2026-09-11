@@ -19,6 +19,7 @@ async function helpCommand(ctx) {
  • <code>/add [reply|@user|id]</code> - Unban + kirim link undangan (Bot API tidak bisa add paksa)
  • <code>/promote [reply|@user] [title]</code> - Angkat member jadi admin
  • <code>/demote [reply|@user]</code> - Turunkan admin jadi member
+ • <code>/cekwelcome</code> - Diagnosa kenapa welcome diam di grup ini
 
 <b>General Commands:</b>
 • <code>/rules</code> - View current group regulations

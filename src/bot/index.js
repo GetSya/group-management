@@ -23,11 +23,12 @@ const { backupCommand, restoreCommand } = require('./commands/backup');
 const { closeCommand, openCommand, lockStatusCommand } = require('./commands/grouplock');
 const { addBadwordCommand, delBadwordCommand, editBadwordCommand, listBadwordsCommand } = require('./commands/badword');
 const { kickCommand, addCommand, promoteCommand, demoteCommand } = require('./commands/groupAdmin');
+const { welcomeCheckCommand } = require('./commands/welcomecheck');
 
 // Handlers & Callbacks
 const callbackRouter = require('./callbacks/callbackRouter');
 const messageHandler = require('./handlers/messageHandler');
-const { handleNewChatMembers, handleLeftChatMember } = require('./handlers/memberHandler');
+const { handleNewChatMembers, handleLeftChatMember, handleChatMemberUpdate } = require('./handlers/memberHandler');
 const handleJoinRequest = require('./handlers/joinRequestHandler');
 
 function createBot() {
@@ -77,6 +78,8 @@ function createBot() {
   bot.command(['add', 'tambah', 'invite', 'unban'], addCommand);
   bot.command(['promote', 'angkat', 'jadikanadmin'], promoteCommand);
   bot.command(['demote', 'turunkan'], demoteCommand);
+  // Diagnosa welcome per-grup — cek admin di dalam command (dukung grup + private)
+  bot.command(['cekwelcome', 'checkwelcome', 'welcomestatus'], welcomeCheckCommand);
 
   // Callback Query Central Router
   bot.on('callback_query', callbackRouter);
@@ -87,6 +90,8 @@ function createBot() {
   // Member Events
   bot.on('new_chat_members', handleNewChatMembers);
   bot.on('left_chat_member', handleLeftChatMember);
+  // Fallback grup Hidden Members (tanpa service message join/leave)
+  bot.on('chat_member', handleChatMemberUpdate);
 
   // Messages & Media Updates
   bot.on(['message', 'channel_post'], messageHandler);

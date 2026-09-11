@@ -34,16 +34,158 @@ function buildGreetingText(template, member, groupTitle) {
 }
 
 /** Kirim teks: coba HTML dulu, fallback teks polos bila template admin rusak. */
-async function safeReplyText(ctx, text) {
+async function sendHtmlWithPlainFallback(sendFn, text) {
   try {
-    return await ctx.reply(text, { parse_mode: 'HTML' });
+    return await sendFn(text, { parse_mode: 'HTML' });
   } catch (err) {
     const msg = (err?.message || '').toLowerCase();
     if (msg.includes("can't parse entities") || msg.includes('wrong html') || msg.includes("can't parse")) {
       logger.debug({ error: err.message }, 'Greeting HTML ditolak, fallback teks polos');
-      return ctx.reply(String(text || '').replace(/<[^>]*>/g, ''));
+      return sendFn(String(text || '').replace(/<[^>]*>/g, ''));
     }
     throw err;
+  }
+}
+
+function sendTextMessage(telegram, chatId, text) {
+  return sendHtmlWithPlainFallback((t, extra) => telegram.sendMessage(chatId, t, extra || {}), text);
+}
+
+/**
+ * Hasil pengiriman sambutan/perpisahan terakhir per grup (in-memory).
+ * Dipakai command /cekwelcome agar admin bisa melihat kenapa satu grup
+ * diam sementara grup lain normal — tanpa harus membaca log server.
+ */
+const lastGreetingResult = new Map(); // chatId -> { at, type, ok, method, error }
+
+function recordGreetingResult(chatId, info) {
+  try {
+    lastGreetingResult.set(String(chatId), { at: new Date().toISOString(), ...info });
+    if (lastGreetingResult.size > 200) {
+      const oldest = lastGreetingResult.keys().next().value;
+      lastGreetingResult.delete(oldest);
+    }
+  } catch {
+    // diagnostik tidak boleh mengganggu alur utama
+  }
+}
+
+function getLastGreetingResult(chatId) {
+  return lastGreetingResult.get(String(chatId)) || null;
+}
+
+/**
+ * Dedup pengiriman sapaan: di grup normal, satu join memicu DUA update
+ * (service message new_chat_members + chat_member). Tanpa ini welcome
+ * terkirim dobel. Key per arah (join/leave) dengan TTL 120 detik.
+ */
+const greetingDedup = new Map(); // key -> timestamp ms
+const GREETING_DEDUP_TTL_MS = 120 * 1000;
+
+function shouldDeliverGreeting(type, chatId, userId) {
+  const key = `${type}:${String(chatId)}:${String(userId)}`;
+  const now = Date.now();
+  const last = greetingDedup.get(key);
+  if (last && now - last < GREETING_DEDUP_TTL_MS) return false;
+  greetingDedup.set(key, now);
+  if (greetingDedup.size > 1000) {
+    for (const [k, ts] of greetingDedup) {
+      if (now - ts >= GREETING_DEDUP_TTL_MS) greetingDedup.delete(k);
+      if (greetingDedup.size <= 800) break;
+    }
+  }
+  return true;
+}
+
+/**
+ * Inti pengiriman welcome — dipakai jalur service message maupun
+ * fallback chat_member (grup Hidden Members). Return { delivered, ... }.
+ */
+async function deliverWelcome(telegram, chatId, chatTitle, member) {
+  const cid = String(chatId);
+  const groupSettings = db.getGroupSettings(cid);
+  const welcome = groupSettings.welcome || {};
+  if (!welcome.enabled) return { delivered: false, reason: 'disabled' };
+  if (!shouldDeliverGreeting('welcome', cid, member.id)) {
+    return { delivered: false, reason: 'duplicate' };
+  }
+
+  const welcomeTemplate = welcome.message || '👋 Welcome @mention to @group!';
+  const welcomeText = buildGreetingText(welcomeTemplate, member, chatTitle);
+
+  try {
+    let sentMsg = null;
+    let method = 'text';
+
+    if (welcome.cardEnabled) {
+      sentMsg = await cardService.sendCardMessage(telegram, cid, 'welcome', {
+        member,
+        groupTitle: chatTitle || 'Group',
+        caption: welcomeText,
+        cardCfg: welcome,
+      });
+      if (sentMsg) method = 'card';
+    }
+    if (!sentMsg) {
+      sentMsg = await sendTextMessage(telegram, cid, welcomeText);
+    }
+
+    recordGreetingResult(cid, { type: 'welcome', ok: true, method });
+
+    if (sentMsg && welcome.deleteAfter && welcome.deleteAfter > 0) {
+      setTimeout(() => {
+        actionService.deleteMessage(telegram, cid, sentMsg.message_id);
+      }, welcome.deleteAfter * 1000);
+    }
+    return { delivered: true, method };
+  } catch (err) {
+    logger.warn({ chatId: cid, error: err.message }, 'Failed to send welcome message');
+    recordGreetingResult(cid, { type: 'welcome', ok: false, method: 'none', error: err.message });
+    return { delivered: false, reason: 'error', error: err.message };
+  }
+}
+
+async function deliverGoodbye(telegram, chatId, chatTitle, member) {
+  const cid = String(chatId);
+  const groupSettings = db.getGroupSettings(cid);
+  const goodbye = groupSettings.goodbye || {};
+  if (!goodbye.enabled) return { delivered: false, reason: 'disabled' };
+  if (!shouldDeliverGreeting('goodbye', cid, member.id)) {
+    return { delivered: false, reason: 'duplicate' };
+  }
+
+  const goodbyeTemplate = goodbye.message || '👋 Goodbye @name!';
+  const goodbyeText = buildGreetingText(goodbyeTemplate, member, chatTitle);
+
+  try {
+    let sentMsg = null;
+    let method = 'text';
+
+    if (goodbye.cardEnabled) {
+      sentMsg = await cardService.sendCardMessage(telegram, cid, 'goodbye', {
+        member,
+        groupTitle: chatTitle || 'Group',
+        caption: goodbyeText,
+        cardCfg: goodbye,
+      });
+      if (sentMsg) method = 'card';
+    }
+    if (!sentMsg) {
+      sentMsg = await sendTextMessage(telegram, cid, goodbyeText);
+    }
+
+    recordGreetingResult(cid, { type: 'goodbye', ok: true, method });
+
+    if (sentMsg && goodbye.deleteAfter && goodbye.deleteAfter > 0) {
+      setTimeout(() => {
+        actionService.deleteMessage(telegram, cid, sentMsg.message_id);
+      }, goodbye.deleteAfter * 1000);
+    }
+    return { delivered: true, method };
+  } catch (err) {
+    logger.warn({ chatId: cid, error: err.message }, 'Failed to send goodbye message');
+    recordGreetingResult(cid, { type: 'goodbye', ok: false, method: 'none', error: err.message });
+    return { delivered: false, reason: 'error', error: err.message };
   }
 }
 
@@ -146,37 +288,59 @@ async function handleNewChatMembers(ctx) {
       continue; // Skip welcome message until verified
     }
 
-    // 5. Welcome Message
-    const welcome = groupSettings.welcome || {};
-    if (welcome.enabled) {
-      const welcomeTemplate = welcome.message || '👋 Welcome @mention to @group!';
-      const welcomeText = buildGreetingText(welcomeTemplate, member, ctx.chat.title);
+    // 5. Welcome Message (inti di deliverWelcome — dipakai juga oleh fallback chat_member)
+    await deliverWelcome(ctx.telegram, chatId, ctx.chat.title, member);
+  }
+}
 
-      try {
-        let sentMsg = null;
+/**
+ * Klasifikasi perubahan status member (update chat_member) menjadi
+ * join / leave / null (perubahan lain: promote, restrict, dll).
+ */
+function classifyChatMemberUpdate(oldStatus, newStatus) {
+  const inChat = s => s === 'member' || s === 'administrator' || s === 'creator' || s === 'restricted';
+  const wasIn = inChat(oldStatus);
+  const nowIn = inChat(newStatus);
+  if (!wasIn && nowIn) return 'join';
+  if (wasIn && !nowIn) return 'leave';
+  return null;
+}
 
-        // Kartu gambar (opsional) — fallback otomatis ke teks bila gagal
-        if (welcome.cardEnabled) {
-          sentMsg = await cardService.sendCardMessage(ctx.telegram, chatId, 'welcome', {
-            member,
-            groupTitle: ctx.chat.title || 'Group',
-            caption: welcomeText,
-            cardCfg: welcome,
-          });
-        }
-        if (!sentMsg) {
-          sentMsg = await safeReplyText(ctx, welcomeText);
-        }
+/**
+ * Fallback untuk grup dengan Hidden Members (has_hidden_members): Telegram
+ * TIDAK mengirim service message new_chat_members/left_chat_member, jadi
+ * welcome & goodbye tidak pernah jalan. Jalur ini memakai update
+ * chat_member (sudah termasuk di allowedUpdates app.js; bot harus admin).
+ *
+ * Catatan: modul captcha & checks hanya berjalan di jalur service message,
+ * jadi di grup hidden-members user baru langsung dapat welcome tanpa
+ * verifikasi/kick-otomatis. Dedup 120 detik mencegah kiriman ganda di
+ * grup normal yang menerima kedua update.
+ */
+async function handleChatMemberUpdate(ctx) {
+  const upd = ctx.update?.chat_member;
+  if (!upd || !upd.chat || !upd.new_chat_member?.user) return;
 
-        if (sentMsg && welcome.deleteAfter && welcome.deleteAfter > 0) {
-          setTimeout(() => {
-            actionService.deleteMessage(ctx.telegram, chatId, sentMsg.message_id);
-          }, welcome.deleteAfter * 1000);
-        }
-      } catch (err) {
-        logger.debug({ error: err.message }, 'Failed to send welcome message');
-      }
-    }
+  const chatId = String(upd.chat.id);
+  const user = upd.new_chat_member.user;
+
+  // Abaikan perubahan status bot sendiri (mis. bot dijadikan admin)
+  try {
+    const me = ctx.botInfo?.id || (await ctx.telegram.getMe()).id;
+    if (String(user.id) === String(me)) return;
+  } catch {
+    // lanjut tanpa cek bila getMe gagal
+  }
+
+  const action = classifyChatMemberUpdate(upd.old_chat_member?.status, upd.new_chat_member.status);
+  if (!action) return;
+
+  db.ensureUser(user);
+
+  if (action === 'join') {
+    await deliverWelcome(ctx.telegram, chatId, upd.chat.title, user);
+  } else {
+    await deliverGoodbye(ctx.telegram, chatId, upd.chat.title, user);
   }
 }
 
@@ -193,39 +357,16 @@ async function handleLeftChatMember(ctx) {
     actionService.deleteMessage(ctx.telegram, chatId, ctx.message.message_id);
   }
 
-  // 2. Goodbye Message
-  const goodbye = groupSettings.goodbye || {};
-  if (goodbye.enabled) {
-    const goodbyeTemplate = goodbye.message || '👋 Goodbye @name!';
-    const goodbyeText = buildGreetingText(goodbyeTemplate, leftMember, ctx.chat.title);
-
-    try {
-      let sentMsg = null;
-
-      // Kartu gambar (opsional) — fallback otomatis ke teks bila gagal
-      if (goodbye.cardEnabled) {
-        sentMsg = await cardService.sendCardMessage(ctx.telegram, chatId, 'goodbye', {
-          member: leftMember,
-          groupTitle: ctx.chat.title || 'Group',
-          caption: goodbyeText,
-          cardCfg: goodbye,
-        });
-      }
-      if (!sentMsg) {
-        sentMsg = await safeReplyText(ctx, goodbyeText);
-      }
-      if (sentMsg && goodbye.deleteAfter && goodbye.deleteAfter > 0) {
-        setTimeout(() => {
-          actionService.deleteMessage(ctx.telegram, chatId, sentMsg.message_id);
-        }, goodbye.deleteAfter * 1000);
-      }
-    } catch (err) {
-      logger.debug({ error: err.message }, 'Failed to send goodbye message');
-    }
-  }
+  // 2. Goodbye Message (inti di deliverGoodbye — dipakai juga oleh fallback chat_member)
+  await deliverGoodbye(ctx.telegram, chatId, ctx.chat.title, leftMember);
 }
 
 module.exports = {
   handleNewChatMembers,
   handleLeftChatMember,
+  handleChatMemberUpdate,
+  classifyChatMemberUpdate,
+  deliverWelcome,
+  deliverGoodbye,
+  getLastGreetingResult,
 };
