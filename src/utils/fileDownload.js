@@ -52,10 +52,20 @@ async function downloadTelegramFile(telegram, fileId, opts = {}) {
     }
   }
 
-  const cause = lastError?.cause?.message || lastError?.message || 'unknown';
+  const rawCause = lastError?.cause?.message || lastError?.message || 'unknown';
+  const isTimeout = lastError?.name === 'AbortError' || /abort|timeout|timed out/i.test(String(rawCause));
+  const host = (() => {
+    try {
+      return new URL(fileUrl).host;
+    } catch {
+      return 'api.telegram.org';
+    }
+  })();
   throw new Error(
-    `Download file gagal setelah ${retries}x percobaan (${cause}). ` +
-      'Cek koneksi server ke api.telegram.org lalu coba lagi.'
+    isTimeout
+      ? `Download file Telegram timeout (${timeoutMs}ms x ${retries} percobaan) dari ${host}. Cek koneksi server lalu coba lagi.`
+      : `Download file Telegram gagal (${rawCause}). Cek koneksi server ke ${host} lalu coba lagi.`,
+    { cause: lastError }
   );
 }
 

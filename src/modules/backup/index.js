@@ -209,8 +209,10 @@ class BackupModule extends BaseModule {
       const filename = params[0];
       await ctx.answerCbQuery('Memulihkan...');
       try {
-        await backupService.restoreFromFile(filename);
-        await ctx.reply(`✅ <b>Restore berhasil</b> dari <code>${filename}</code>\nDatabase telah dipulihkan.`, { parse_mode: 'HTML' });
+        const { escapeHtml } = require('../../utils/messageUtils');
+        const result = await backupService.restoreFromFile(filename);
+        const warn = backupService.constructor.remoteSyncWarning(result, escapeHtml);
+        await ctx.reply(`✅ <b>Restore berhasil</b> dari <code>${escapeHtml(filename)}</code>\nDatabase telah dipulihkan.${warn}`, { parse_mode: 'HTML' });
         logger.info({ filename, by: userId }, 'Backup restored via Telegram');
       } catch (e) {
         await ctx.reply(`❌ Restore gagal: ${e.message}`);

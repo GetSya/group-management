@@ -138,6 +138,7 @@ async function restoreCommand(ctx) {
     try {
       await ctx.reply('⏳ Mendownload dan memvalidasi backup...');
       const { downloadTelegramFile } = require('../../utils/fileDownload');
+      const { escapeHtml } = require('../../utils/messageUtils');
       const buf = await downloadTelegramFile(ctx.telegram, repliedDoc.file_id);
       let jsonData;
       try {
@@ -145,10 +146,11 @@ async function restoreCommand(ctx) {
       } catch {
         throw new Error('File bukan JSON valid.');
       }
-      await backupService.restoreFromData(jsonData, repliedDoc.file_name);
+      const result = await backupService.restoreFromData(jsonData, repliedDoc.file_name);
       logger.info({ file: repliedDoc.file_name, by: ctx.from?.id }, 'Backup restored via /restore reply');
+      const warn = backupService.constructor.remoteSyncWarning(result, escapeHtml);
       return ctx.reply(
-        `✅ <b>Restore berhasil</b> dari <code>${repliedDoc.file_name}</code>\nBackup sebelumnya diamankan otomatis.`,
+        `✅ <b>Restore berhasil</b> dari <code>${escapeHtml(repliedDoc.file_name)}</code>\nBackup sebelumnya diamankan otomatis.${warn}`,
         { parse_mode: 'HTML' }
       );
     } catch (e) {
@@ -162,10 +164,12 @@ async function restoreCommand(ctx) {
   if (filename) {
     try {
       await ctx.reply(`⏳ Memulihkan dari <code>${filename}</code>...`, { parse_mode: 'HTML' });
-      await backupService.restoreFromFile(filename);
+      const { escapeHtml } = require('../../utils/messageUtils');
+      const result = await backupService.restoreFromFile(filename);
       logger.info({ filename, by: ctx.from?.id }, 'Backup restored via /restore filename');
+      const warn = backupService.constructor.remoteSyncWarning(result, escapeHtml);
       return ctx.reply(
-        `✅ <b>Restore berhasil</b> dari <code>${filename}</code>\nBackup sebelumnya diamankan otomatis.`,
+        `✅ <b>Restore berhasil</b> dari <code>${escapeHtml(filename)}</code>\nBackup sebelumnya diamankan otomatis.${warn}`,
         { parse_mode: 'HTML' }
       );
     } catch (e) {

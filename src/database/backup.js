@@ -220,8 +220,13 @@ class BackupService {
       throw new Error(`Backup validation failed: ${details}`);
     }
 
-    // Safety backup of current state before restore
-    await this.createBackup(null, 'pre-restore');
+    // Safety backup of current state before restore.
+    // Kegagalan di sini tidak boleh menggagalkan restore.
+    try {
+      await this.createBackup(null, 'pre-restore');
+    } catch (e) {
+      logger.warn({ error: e.message }, 'Pre-restore safety backup gagal, lanjut restore');
+    }
 
     // Atomic restore
     db.data = validated.data;
@@ -230,7 +235,21 @@ class BackupService {
       const { getEmptyDatabase } = require('./schema');
       db.data.backupConfig = getEmptyDatabase().backupConfig;
     }
-    await db.atomicSave(db.data);
+    try {
+      await db.atomicSave(db.data);
+    } catch (e) {
+      // Driver remote (jvault): atomicSave menulis mirror lokal DULU lalu PUT
+      // remote. Bila PUT gagal (server tidak bisa menjangkau JsonVault),
+      // data lokal + memori SUDAH dipulihkan — jangan laporkan sebagai
+      // kegagalan total. Kembalikan status sukses-dengan-warning agar
+      // pemanggil bisa menampilkan peringatan yang jujur.
+      if (typeof db.isRemote === 'function' && db.isRemote()) {
+        const remoteError = e.message;
+        logger.error({ error: remoteError, source: sourceLabel }, 'Restore: lokal OK, sinkron JsonVault gagal');
+        return { ok: true, remoteSyncFailed: true, remoteError };
+      }
+      throw new Error(`Restore: simpan database lokal gagal: ${e.message}`);
+    }
     logger.info({ source: sourceLabel }, 'Database restored from backup successfully');
     return true;
   }
@@ -238,6 +257,28 @@ class BackupService {
   async exportCurrent() {
     const db = this._getDb();
     return JSON.parse(JSON.stringify(db.data));
+  }
+
+  /**
+   * True bila hasil restoreFromData/restoreFromFile menandakan data lokal
+   * sudah pulih tetapi sinkron remote (JsonVault) gagal.
+   */
+  static isRemoteSyncFailure(result) {
+    return Boolean(result && typeof result === 'object' && result.remoteSyncFailed);
+  }
+
+  /**
+   * Baris peringatan (siap tempel ke pesan sukses, parse_mode HTML) untuk
+   * kasus sukses-lokal-gagal-remote. `escapeHtml` diinjeksikan agar modul
+   * ini tidak bergantung pada utils message.
+   */
+  static remoteSyncWarning(result, escapeHtml = s => String(s ?? '')) {
+    if (!BackupService.isRemoteSyncFailure(result)) return '';
+    const detail = escapeHtml(result.remoteError || 'unknown');
+    return (
+      `\n\n⚠️ <i>Catatan: database lokal sudah dipulihkan, tetapi sinkron ke JsonVault gagal (${detail}). ` +
+      `Jangan restart bot dulu — periksa koneksi server, lalu jalankan <code>/backup</code> untuk memicu sinkron ulang.</i>`
+    );
   }
 
   // ---------- Send to username/chat ----------

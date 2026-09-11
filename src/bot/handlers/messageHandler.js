@@ -140,11 +140,13 @@ async function messageHandler(ctx) {
           } catch {
             throw new Error('File bukan JSON valid.');
           }
-          await backupService.restoreFromData(jsonData, doc.file_name);
+          const result = await backupService.restoreFromData(jsonData, doc.file_name);
           sessionService.clearSession(chatId, userId);
-          return ctx.reply(`✅ <b>Restore berhasil</b> dari <code>${doc.file_name}</code>\nDatabase telah dipulihkan. Backup sebelumnya diamankan.`, { parse_mode: 'HTML' });
+          const { escapeHtml } = require('../../utils/messageUtils');
+          const warn = backupService.constructor.remoteSyncWarning(result, escapeHtml);
+          return ctx.reply(`✅ <b>Restore berhasil</b> dari <code>${escapeHtml(doc.file_name)}</code>\nDatabase telah dipulihkan. Backup sebelumnya diamankan.${warn}`, { parse_mode: 'HTML' });
         } catch (e) {
-          logger.warn({ error: e.message }, 'Restore from upload failed');
+          logger.warn({ error: e.message, file: doc.file_name, size: doc.file_size, driver: require('../../database/database').getDriver() }, 'Restore from upload failed');
           return ctx.reply(`❌ Restore gagal: ${e.message}\nPastikan file adalah backup db.json yang valid.`);
         }
       }
