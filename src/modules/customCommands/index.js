@@ -24,10 +24,21 @@ class CustomCommandsModule extends BaseModule {
     return this.safeEdit(ctx, text, keyboard);
   }
 
-  async renderList(ctx, chatId) {
+  async renderList(ctx, chatId, page = 1) {
     const commands = customCommandRepo.findAll(chatId);
 
-    let text = `📋 <b>GROUP CUSTOM COMMANDS (${commands.length}):</b>\n\n`;
+    const COLS = 2;
+    const ROWS = 4;
+    const PER_PAGE = COLS * ROWS; // 8
+    const totalPages = Math.max(1, Math.ceil(commands.length / PER_PAGE));
+    const p = Math.max(1, Math.min(totalPages, parseInt(page, 10) || 1));
+    const slice = commands.slice((p - 1) * PER_PAGE, p * PER_PAGE);
+
+    let text = `📋 <b>GROUP CUSTOM COMMANDS (${commands.length}):</b>\n`;
+    if (totalPages > 1) {
+      text += `📄 Hal ${p}/${totalPages}\n`;
+    }
+    text += `\n`;
     if (commands.length === 0) {
       text += 'No custom commands created yet. Click <b>➕ Add Command</b> to create one.';
     } else {
@@ -35,21 +46,26 @@ class CustomCommandsModule extends BaseModule {
     }
 
     const commandButtons = [];
-    for (let i = 0; i < commands.length; i += 2) {
-      const c1 = commands[i];
-      const c2 = commands[i + 1];
+    for (let i = 0; i < slice.length; i += COLS) {
+      const c1 = slice[i];
+      const c2 = slice[i + 1];
       const row = [];
       const s1 = c1.enabled ? '✅' : '❌';
-      row.push(Markup.button.callback(`/${c1.name} ${s1}`, `customcmd:view:${c1.name}`));
+      row.push(Markup.button.callback(`/${c1.name} ${s1}`, `customcmd:view:${c1.name}:${p}`));
       if (c2) {
         const s2 = c2.enabled ? '✅' : '❌';
-        row.push(Markup.button.callback(`/${c2.name} ${s2}`, `customcmd:view:${c2.name}`));
+        row.push(Markup.button.callback(`/${c2.name} ${s2}`, `customcmd:view:${c2.name}:${p}`));
       }
       commandButtons.push(row);
     }
 
+    const navRow = [];
+    if (p > 1) navRow.push(Markup.button.callback('⬅️ Prev', `customcmd:list:${p - 1}`));
+    if (p < totalPages) navRow.push(Markup.button.callback('Next ➡️', `customcmd:list:${p + 1}`));
+
     const keyboard = Markup.inlineKeyboard([
       ...commandButtons,
+      ...(navRow.length > 0 ? [navRow] : []),
       [
         Markup.button.callback('➕ Add Command', 'customcmd:add'),
         Markup.button.callback('⬅️ Back', 'customcmd:menu'),
@@ -59,25 +75,33 @@ class CustomCommandsModule extends BaseModule {
     return this.safeEdit(ctx, text, keyboard);
   }
 
-  async renderEdit(ctx, chatId, cmdName) {
+  async renderEdit(ctx, chatId, cmdName, returnPage = 1, btnPage = 1) {
     const cmd = customCommandRepo.findByName(chatId, cmdName);
     if (!cmd) {
-      return this.renderList(ctx, chatId);
+      return this.renderList(ctx, chatId, returnPage);
     }
 
-    let buttonCount = 0;
-    const buttonListRows = [];
+    const rp = Math.max(1, parseInt(returnPage, 10) || 1);
+    const { flattenButtons, BUTTONS_PER_PAGE } = require('./customCommandKeyboard');
+    const flatButtons = flattenButtons(cmd.buttons);
+    const buttonCount = flatButtons.length;
+    const totalBtnPages = Math.max(1, Math.ceil(buttonCount / BUTTONS_PER_PAGE));
+    const bp = Math.max(1, Math.min(totalBtnPages, parseInt(btnPage, 10) || 1));
+    const btnSlice = flatButtons.slice((bp - 1) * BUTTONS_PER_PAGE, bp * BUTTONS_PER_PAGE);
 
-    if (cmd.buttons && Array.isArray(cmd.buttons)) {
-      cmd.buttons.forEach((row, rIdx) => {
-        row.forEach(btn => {
-          buttonCount += 1;
-          buttonListRows.push([
-            Markup.button.callback(`🔘 ${btn.text} (${btn.type})`, `customcmd:view:${cmd.name}`),
-            Markup.button.callback(`🗑 Delete`, `customcmd:btn_del:${cmd.name}:${btn.id}`),
-          ]);
-        });
-      });
+    const buttonListRows = [];
+    for (const btn of btnSlice) {
+      buttonListRows.push([
+        Markup.button.callback(`🔘 ${btn.text} (${btn.type})`, `customcmd:view:${cmd.name}:${rp}:${bp}`),
+        Markup.button.callback(`🗑 Delete`, `customcmd:btn_del:${cmd.name}:${btn.id}:${rp}:${bp}`),
+      ]);
+    }
+    if (totalBtnPages > 1) {
+      const btnNav = [];
+      if (bp > 1) btnNav.push(Markup.button.callback('⬅️ Prev', `customcmd:btnpage:${cmd.name}:${rp}:${bp - 1}`));
+      btnNav.push(Markup.button.callback(`📄 ${bp}/${totalBtnPages}`, `customcmd:btnpage:${cmd.name}:${rp}:${bp}`));
+      if (bp < totalBtnPages) btnNav.push(Markup.button.callback('Next ➡️', `customcmd:btnpage:${cmd.name}:${rp}:${bp + 1}`));
+      buttonListRows.push(btnNav);
     }
 
     // Use code-point aware truncation to avoid splitting surrogate pairs (e.g. fancy unicode, emoji)
@@ -92,20 +116,20 @@ class CustomCommandsModule extends BaseModule {
 
     const keyboard = Markup.inlineKeyboard([
       [
-        Markup.button.callback(cmd.enabled ? '🔴 Disable' : '🟢 Enable', `customcmd:toggle:${cmd.name}`),
-        Markup.button.callback(`👥 Perm: ${cmd.permission.toUpperCase()}`, `customcmd:perm:${cmd.name}`),
+        Markup.button.callback(cmd.enabled ? '🔴 Disable' : '🟢 Enable', `customcmd:toggle:${cmd.name}:${rp}:${bp}`),
+        Markup.button.callback(`👥 Perm: ${cmd.permission.toUpperCase()}`, `customcmd:perm:${cmd.name}:${rp}:${bp}`),
       ],
       [
-        Markup.button.callback('✏️ Edit Response', `customcmd:edit_resp:${cmd.name}`),
-        Markup.button.callback('👁 Preview', `customcmd:preview:${cmd.name}`),
+        Markup.button.callback('✏️ Edit Response', `customcmd:edit_resp:${cmd.name}:${rp}:${bp}`),
+        Markup.button.callback('👁 Preview', `customcmd:preview:${cmd.name}:${rp}:${bp}`),
       ],
       [
-        Markup.button.callback('➕ Add Button', `customcmd:btn_add:${cmd.name}`),
+        Markup.button.callback('➕ Add Button', `customcmd:btn_add:${cmd.name}:${rp}:${bp}`),
       ],
       ...buttonListRows,
       [
-        Markup.button.callback('🗑 Delete Command', `customcmd:delete:${cmd.name}`),
-        Markup.button.callback('⬅️ Back to List', 'customcmd:list'),
+        Markup.button.callback('🗑 Delete Command', `customcmd:delete:${cmd.name}:${rp}`),
+        Markup.button.callback('⬅️ Back to List', `customcmd:list:${rp}`),
       ],
     ]);
 

@@ -100,9 +100,29 @@ describe('Custom Commands & Buttons Suite', async () => {
     const cmd = customCommandRepo.findByName(group, 'socials');
     assert.strictEqual(cmd.buttons.length, 2);
 
-    const keyboard = buildCustomKeyboard(cmd.buttons);
+    const keyboard = buildCustomKeyboard(cmd.buttons, 1, 'socials');
     assert.ok(keyboard);
-    assert.strictEqual(keyboard.reply_markup.inline_keyboard.length, 2);
+    // 2 buttons -> grid 2 cols = 1 row
+    assert.strictEqual(keyboard.reply_markup.inline_keyboard.length, 1);
+    assert.strictEqual(keyboard.reply_markup.inline_keyboard[0].length, 2);
+  });
+
+  it('should paginate button keyboards 5x2 (10 per page)', () => {
+    // 12 flat buttons -> page 1: 5 rows (10 btns) + nav = 6 rows, page 2: 1 row + nav = 2 rows
+    const fakeButtons = [];
+    for (let i = 0; i < 12; i++) {
+      fakeButtons.push([{ id: `btn_${i}`, text: `Btn ${i}`, type: 'response', response: 'hi' }]);
+    }
+    const p1 = buildCustomKeyboard(fakeButtons, 1, 'sosmedbooster');
+    assert.strictEqual(p1.reply_markup.inline_keyboard.length, 6);
+    assert.strictEqual(p1.reply_markup.inline_keyboard[0].length, 2);
+    // nav row present on last row
+    const navText = p1.reply_markup.inline_keyboard[5].map(b => b.text).join(' ');
+    assert.ok(navText.includes('1/2'));
+
+    const p2 = buildCustomKeyboard(fakeButtons, 2, 'sosmedbooster');
+    assert.strictEqual(p2.reply_markup.inline_keyboard.length, 2);
+    assert.strictEqual(p2.reply_markup.inline_keyboard[0].length, 2);
   });
 
   it('should interpolate user and group variables in responses', () => {
@@ -111,11 +131,57 @@ describe('Custom Commands & Buttons Suite', async () => {
       chat: { id: -100123, title: 'Dev Community' },
     };
 
-    const template = 'Hello {mention}, welcome to {group}! Your ID is {user_id}.';
+    const template = 'Hello @mention, welcome to @group! Your ID is @user_id.';
     const rendered = customCommandService.interpolateVariables(template, mockCtx, 'HTML');
 
     assert.ok(rendered.includes('Dev Community'));
     assert.ok(rendered.includes('12345'));
     assert.ok(rendered.includes('John'));
+
+    // backward compat {} masih jalan
+    const legacy = customCommandService.interpolateVariables('Hi {mention} di {group}', mockCtx, 'HTML');
+    assert.ok(legacy.includes('Dev Community'));
+  });
+
+  it('should interpolate @price_ @stock_ @sisa_kuota @order_id from catalog', () => {
+    const catalogRepo = require('../src/modules/catalog/catalogRepository');
+    const chatId = '-100777catalog';
+    const userId = 555001;
+
+    catalogRepo.setProduct(chatId, 'nokos', { price: 15000, stock: 12, quota: 7 });
+    catalogRepo.setProduct(chatId, 'sosmedbooster', { price: 25000, stock: 30 });
+
+    const mockCtx = {
+      from: { id: userId, first_name: 'Budi', username: 'budi' },
+      chat: { id: Number(chatId), title: 'Test Group' },
+      targetChatId: chatId,
+    };
+
+    const t1 = customCommandService.interpolateVariables(
+      'Harga @price_nokos, stok @stock_nokos, sisa @sisa_kuota_nokos',
+      mockCtx,
+      'HTML'
+    );
+    assert.ok(t1.includes('Rp15.000'), `t1=${t1}`);
+    assert.ok(t1.includes('7'), `t1=${t1}`);
+
+    // bare @price / @sisa_kuota mengikuti command saat ini (reusable template)
+    const t2 = customCommandService.interpolateVariables('Harga @price, sisa @sisa_kuota', mockCtx, 'HTML', {
+      commandName: 'nokos',
+    });
+    assert.ok(t2.includes('Rp15.000'), `t2=${t2}`);
+    assert.ok(t2.includes('7'), `t2=${t2}`);
+
+    // produk belum ada -> fallback jelas, bukan crash
+    const t3 = customCommandService.interpolateVariables('Harga @price_belumada', mockCtx, 'HTML');
+    assert.ok(t3.includes('Belum diatur'), `t3=${t3}`);
+
+    // belum ada order -> @order_id = -
+    const t4 = customCommandService.interpolateVariables('Order @order_id', mockCtx, 'HTML');
+    assert.ok(t4.includes('-'), `t4=${t4}`);
+
+    catalogRepo.createOrder(chatId, String(userId), { product: 'nokos', amount: 15000 });
+    const t5 = customCommandService.interpolateVariables('Order @order_id', mockCtx, 'HTML');
+    assert.ok(t5.includes('ORD-'), `t5=${t5}`);
   });
 });

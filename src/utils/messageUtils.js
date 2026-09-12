@@ -1,7 +1,7 @@
 /**
  * Helper for safe string interpolation and user mentions
- * Supports @variable syntax (e.g. @mention, @name, @group, @date)
- * Also keeps backwards compatibility with {variable} syntax
+ * Primary syntax pakai @variable (e.g. @mention, @name, @group, @date, @price_nokos)
+ * Tetap dukung {variable} lama agar template lama tidak rusak
  */
 function interpolate(template, data = {}) {
   if (!template || typeof template !== 'string') return '';

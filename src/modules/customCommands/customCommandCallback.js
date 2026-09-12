@@ -33,7 +33,7 @@ async function handleCustomCommandCallback(ctx, action, params) {
 
     if (button.type === 'response' && button.response) {
       await ctx.answerCbQuery();
-      const rendered = customCommandService.interpolateVariables(button.response, ctx, 'HTML');
+      const rendered = customCommandService.interpolateVariables(button.response, ctx, 'HTML', { commandName: command.name });
       const chunks = customCommandService.splitTextIntoChunks(rendered, 4000);
       for (const chunk of chunks) {
         await ctx.reply(chunk, { parse_mode: 'HTML' });
@@ -42,6 +42,41 @@ async function handleCustomCommandCallback(ctx, action, params) {
     }
 
     return ctx.answerCbQuery();
+  }
+
+  // 1b. User-facing pagination for command buttons (`customcmd:cpage:cmdName:page`)
+  // Grid 5 rows x 2 cols = 10 per page. No admin required, but respect command permission.
+  if (action === 'cpage') {
+    const cmdName = params[0];
+    const page = parseInt(params[1], 10) || 1;
+    const cmd = customCommandRepo.findByName(chatId, cmdName);
+    if (!cmd) {
+      return ctx.answerCbQuery('❌ Command no longer available.', { show_alert: true });
+    }
+    const hasPermission = await customCommandService.checkPermission(ctx, cmd);
+    if (!hasPermission) {
+      return ctx.answerCbQuery('❌ You do not have permission to use this.', { show_alert: true });
+    }
+    const keyboard = buildCustomKeyboard(cmd.buttons, page, cmd.name);
+    if (!keyboard) {
+      return ctx.answerCbQuery();
+    }
+    await ctx.answerCbQuery();
+    try {
+      if (typeof ctx.editMessageReplyMarkup === 'function') {
+        await ctx.editMessageReplyMarkup(keyboard.reply_markup);
+      } else {
+        const msg = ctx.callbackQuery?.message;
+        if (msg) {
+          await ctx.telegram.editMessageReplyMarkup(chatId, msg.message_id, undefined, keyboard.reply_markup);
+        }
+      }
+    } catch (err) {
+      if (!err.message?.includes('message is not modified')) {
+        logger.debug({ error: err.message }, 'Failed to paginate custom command buttons');
+      }
+    }
+    return;
   }
 
   // 2. Admin UI Actions - Require Administrator privileges
@@ -59,7 +94,8 @@ async function handleCustomCommandCallback(ctx, action, params) {
 
   if (action === 'list') {
     await ctx.answerCbQuery();
-    return customModule.renderList(ctx, chatId);
+    const page = params[0] || '1';
+    return customModule.renderList(ctx, chatId, page);
   }
 
   if (action === 'add') {
@@ -70,33 +106,48 @@ async function handleCustomCommandCallback(ctx, action, params) {
 
   if (action === 'view') {
     const cmdName = params[0];
+    const rp = params[1] || '1';
+    const bp = params[2] || '1';
     await ctx.answerCbQuery();
-    return customModule.renderEdit(ctx, chatId, cmdName);
+    return customModule.renderEdit(ctx, chatId, cmdName, rp, bp);
+  }
+
+  if (action === 'btnpage') {
+    const cmdName = params[0];
+    const rp = params[1] || '1';
+    const bp = params[2] || '1';
+    await ctx.answerCbQuery();
+    return customModule.renderEdit(ctx, chatId, cmdName, rp, bp);
   }
 
   if (action === 'toggle') {
     const cmdName = params[0];
+    const rp = params[1] || '1';
+    const bp = params[2] || '1';
     const updated = customCommandRepo.toggle(chatId, cmdName);
     await ctx.answerCbQuery(`Command /${cmdName} ${updated?.enabled ? 'Enabled' : 'Disabled'}`);
-    return customModule.renderEdit(ctx, chatId, cmdName);
+    return customModule.renderEdit(ctx, chatId, cmdName, rp, bp);
   }
 
   if (action === 'perm') {
     const cmdName = params[0];
+    const rp = params[1] || '1';
+    const bp = params[2] || '1';
     const cmd = customCommandRepo.findByName(chatId, cmdName);
     if (cmd) {
       const nextPerm = cmd.permission === 'everyone' ? 'admin' : 'everyone';
       customCommandRepo.update(chatId, cmdName, { permission: nextPerm });
       await ctx.answerCbQuery(`Permission set to: ${nextPerm.toUpperCase()}`);
     }
-    return customModule.renderEdit(ctx, chatId, cmdName);
+    return customModule.renderEdit(ctx, chatId, cmdName, rp, bp);
   }
 
   if (action === 'delete') {
     const cmdName = params[0];
+    const rp = params[1] || '1';
     customCommandRepo.delete(chatId, cmdName);
     await ctx.answerCbQuery(`Command /${cmdName} deleted.`);
-    return customModule.renderList(ctx, chatId);
+    return customModule.renderList(ctx, chatId, rp);
   }
 
   if (action === 'preview') {
@@ -105,8 +156,8 @@ async function handleCustomCommandCallback(ctx, action, params) {
     if (!cmd) return ctx.answerCbQuery('Command not found.');
 
     await ctx.answerCbQuery();
-    const rendered = customCommandService.interpolateVariables(cmd.response, ctx, cmd.parseMode || 'HTML');
-    const keyboard = buildCustomKeyboard(cmd.buttons);
+    const rendered = customCommandService.interpolateVariables(cmd.response, ctx, cmd.parseMode || 'HTML', { commandName: cmd.name });
+    const keyboard = buildCustomKeyboard(cmd.buttons, 1, cmd.name);
 
     const maxLength = 4000;
 
@@ -131,7 +182,7 @@ async function handleCustomCommandCallback(ctx, action, params) {
     const respPoints = Array.from(cmd.response);
     const respPreview = respPoints.length > 500 ? respPoints.slice(0, 497).join('') + '...' : cmd.response;
     const escapedRespPreview = respPreview.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return ctx.reply(`✏️ <b>Edit Response for /${cmd.name}</b>\n\nCurrent response:\n<code>${escapedRespPreview}</code>\n\n<i>Send the new response text. Available variables: {mention}, {user}, {username}, {group}, {user_id}, {date}, {time}</i>\n\nSend /cancel to abort.`, { parse_mode: 'HTML' });
+    return ctx.reply(`✏️ <b>Edit Response for /${cmd.name}</b>\n\nCurrent response:\n<code>${escapedRespPreview}</code>\n\n<i>Variables pakai @: @mention, @user, @username, @group, @user_id, @date, @time, @price_namaproduk, @stock_namaproduk, @sisa_kuota, @order_id</i>\n\nSend /cancel to abort.`, { parse_mode: 'HTML' });
   }
 
   if (action === 'btn_add') {
@@ -144,9 +195,11 @@ async function handleCustomCommandCallback(ctx, action, params) {
   if (action === 'btn_del') {
     const cmdName = params[0];
     const btnId = params[1];
+    const rp = params[2] || '1';
+    const bp = params[3] || '1';
     customCommandRepo.deleteButton(chatId, cmdName, btnId);
     await ctx.answerCbQuery('Button deleted.');
-    return customModule.renderEdit(ctx, chatId, cmdName);
+    return customModule.renderEdit(ctx, chatId, cmdName, rp, bp);
   }
 
   return ctx.answerCbQuery();

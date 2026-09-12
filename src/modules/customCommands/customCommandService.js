@@ -1,4 +1,6 @@
 const customCommandRepo = require('./customCommandRepository');
+const catalogRepo = require('../catalog/catalogRepository');
+const { formatIDR } = require('../catalog/catalogRepository');
 const { buildCustomKeyboard } = require('./customCommandKeyboard');
 const { getUserMention, escapeHtml } = require('../../utils/messageUtils');
 const { isAdmin } = require('../../utils/permissionUtils');
@@ -10,11 +12,14 @@ class CustomCommandService {
     this.cooldowns = new Map(); // key: `${chatId}:${userId}:${commandName}` -> timestamp
   }
 
-  interpolateVariables(template, ctx, parseMode = 'HTML') {
+  interpolateVariables(template, ctx, parseMode = 'HTML', extra = {}) {
     if (!template) return '';
 
     const from = ctx.from || {};
     const chat = ctx.chat || {};
+    const chatId = String(ctx.targetChatId || chat.id || '');
+    const userId = String(from.id || '');
+    const commandName = extra.commandName || extra.cmdName || extra.currentCommand || null;
     const now = new Date();
 
     const rawFirstName = from.first_name || '';
@@ -45,7 +50,80 @@ class CustomCommandService {
 
     return template.replace(/(?:\{(\w+)\}|@(\w+))/g, (match, braceKey, atKey) => {
       const key = braceKey || atKey;
-      return vars[key] !== undefined ? vars[key] : match;
+      if (vars[key] !== undefined) return vars[key];
+
+      // --- Katalog variables (pakai @, tetap dukung { } lama agar template lama tidak rusak) ---
+      const k = String(key || '').toLowerCase();
+      const resolveProduct = suffixOrNull => {
+        const target = suffixOrNull || commandName;
+        if (!target || !chatId) return null;
+        try {
+          return catalogRepo.findProduct(chatId, target);
+        } catch {
+          return null;
+        }
+      };
+
+      // @price_<nama> / @harga_<nama>
+      if (k.startsWith('price_') || k.startsWith('harga_')) {
+        const prodName = key.slice(key.indexOf('_') + 1);
+        const p = resolveProduct(prodName);
+        if (!p) return 'Belum diatur';
+        return formatIDR(p.price);
+      }
+      // @stock_<nama> / @stok_<nama> / @kuota_<nama> / @quota_<nama> / @sisa_kuota_<nama>
+      if (
+        k.startsWith('stock_') ||
+        k.startsWith('stok_') ||
+        k.startsWith('kuota_') ||
+        k.startsWith('quota_') ||
+        k.startsWith('sisa_kuota_') ||
+        k.startsWith('sisakuota_')
+      ) {
+        const prodName = key.slice(key.indexOf('_') + 1);
+        // sisa_kuota_<nama> -> suffix setelah prefix panjang
+        const cleaned = k.startsWith('sisa_kuota_')
+          ? key.slice('sisa_kuota_'.length)
+          : k.startsWith('sisakuota_')
+            ? key.slice('sisakuota_'.length)
+            : prodName;
+        const p = resolveProduct(cleaned);
+        if (!p) return '0';
+        const val = p.quota !== undefined && p.quota !== null ? p.quota : p.stock;
+        return String(val ?? 0);
+      }
+      // @order_id / @orderid / @order_status
+      if (k === 'order_id' || k === 'orderid') {
+        try {
+          const last = chatId && userId ? catalogRepo.getLastOrder(chatId, userId) : null;
+          return last ? last.id : '-';
+        } catch {
+          return '-';
+        }
+      }
+      if (k === 'order_status' || k === 'orderstatus') {
+        try {
+          const last = chatId && userId ? catalogRepo.getLastOrder(chatId, userId) : null;
+          return last ? last.status : '-';
+        } catch {
+          return '-';
+        }
+      }
+      // Bare @price / @harga -> produk = command saat ini (template reusable)
+      if (k === 'price' || k === 'harga') {
+        const p = resolveProduct(null);
+        if (!p) return match;
+        return formatIDR(p.price);
+      }
+      // Bare @stock / @stok / @kuota / @quota / @sisa_kuota -> produk saat ini
+      if (k === 'stock' || k === 'stok' || k === 'kuota' || k === 'quota' || k === 'sisa_kuota' || k === 'sisakuota') {
+        const p = resolveProduct(null);
+        if (!p) return match;
+        const val = p.quota !== undefined && p.quota !== null ? p.quota : p.stock;
+        return String(val ?? 0);
+      }
+
+      return match;
     });
   }
 
@@ -108,8 +186,8 @@ class CustomCommandService {
     }
 
     // 3. Render message & keyboard
-    const renderedText = this.interpolateVariables(cmd.response, ctx, cmd.parseMode || 'HTML');
-    const keyboard = buildCustomKeyboard(cmd.buttons);
+    const renderedText = this.interpolateVariables(cmd.response, ctx, cmd.parseMode || 'HTML', { commandName: cmd.name });
+    const keyboard = buildCustomKeyboard(cmd.buttons, 1, cmd.name);
     const parseMode = cmd.parseMode || 'HTML';
 
     if (isFromButton && ctx.callbackQuery) {

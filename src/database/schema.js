@@ -167,6 +167,8 @@ const DatabaseSchema = z.object({
   deletingMessages: z.record(z.any()).default({}),
   languages: z.record(z.any()).default({}),
   customCommands: z.record(z.any()).default({}),
+  catalogs: z.record(z.any()).default({}),
+  catalogOrders: z.record(z.any()).default({}),
   statistics: z.record(z.any()).default({}),
   logs: z.array(z.any()).default([]),
   backupConfig: z
@@ -220,6 +222,8 @@ const getEmptyDatabase = () => ({
   deletingMessages: {},
   languages: {},
   customCommands: {},
+  catalogs: {},
+  catalogOrders: {},
   statistics: {},
   logs: [],
   backupConfig: {

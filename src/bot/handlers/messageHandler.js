@@ -309,7 +309,7 @@ async function messageHandler(ctx) {
         );
 
         return ctx.reply(
-          `✅ Command name set to: <code>/${validation.cleanName}</code>\n\n📝 Now send the response message text for this command.\n\n<i>Available variables:</i> <code>{mention}</code>, <code>{user}</code>, <code>{username}</code>, <code>{group}</code>, <code>{user_id}</code>, <code>{date}</code>, <code>{time}</code>`,
+          `✅ Command name set to: <code>/${validation.cleanName}</code>\n\n📝 Now send the response message text for this command.\n\n<i>Variables pakai @:</i> <code>@mention</code>, <code>@user</code>, <code>@username</code>, <code>@group</code>, <code>@user_id</code>, <code>@date</code>, <code>@time</code>\n<i>Katalog:</i> <code>@price_namaproduk</code>, <code>@stock_namaproduk</code>, <code>@sisa_kuota</code>, <code>@order_id</code>\nContoh: <code>Harga @price_nokos, stok @stock_nokos</code>`,
           { parse_mode: 'HTML' }
         );
       }

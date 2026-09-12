@@ -6,7 +6,7 @@ const backupService = require('./backup');
 const JsonVaultClient = require('./jsonVaultClient');
 const { DatabaseSchema, getEmptyDatabase, getDefaultGroupSettings } = require('./schema');
 
-const KNOWN_ROOT_KEYS = ['groups', 'users', 'settings', 'customCommands', 'blocks', 'warnings', 'backupConfig'];
+const KNOWN_ROOT_KEYS = ['groups', 'users', 'settings', 'customCommands', 'catalogs', 'catalogOrders', 'blocks', 'warnings', 'backupConfig'];
 
 class DatabaseService {
   constructor() {
